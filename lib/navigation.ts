@@ -1,0 +1,32 @@
+export const publicNavItems = [
+  { href: "/about", label: "About" },
+  { href: "/how-it-works", label: "How It Works" },
+  { href: "/buyers", label: "Buyers" },
+  { href: "/sellers", label: "Sellers" },
+  { href: "/digital-assets", label: "Digital Assets" },
+  { href: "/opportunities", label: "Opportunities" },
+  { href: "/contact", label: "Contact" },
+];
+
+export const adminNavItems = [
+  { href: "/admin", label: "Dashboard" },
+  { href: "/admin/market-radar", label: "Market Radar" },
+  { href: "/admin/asset-drafts", label: "AI Asset Drafts" },
+  { href: "/admin/build-pipeline", label: "AI Asset Build Pipeline" },
+  { href: "/admin/packaging", label: "Packaging Center" },
+  { href: "/admin/listings", label: "AI Asset Listings" },
+  { href: "/admin/opportunities", label: "Buyer Discovery" },
+  { href: "/admin/business-submissions", label: "Business Intake" },
+  { href: "/admin/underwriting", label: "Underwriting" },
+  { href: "/admin/buyers", label: "Buyers" },
+  { href: "/admin/inquiries", label: "Inquiry Inbox" },
+  { href: "/admin/deal-room", label: "Deal Room" },
+  { href: "/admin/offers", label: "Offer Desk" },
+  { href: "/admin/contracts", label: "Contracts" },
+  { href: "/admin/transfers", label: "Transfer Desk" },
+  { href: "/admin/documents", label: "Documents" },
+  { href: "/admin/tasks", label: "Tasks" },
+  { href: "/admin/crm", label: "CRM" },
+  { href: "/admin/dialer", label: "Dialer" },
+  { href: "/admin/settings", label: "Settings" },
+];
