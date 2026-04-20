@@ -62,8 +62,8 @@ export async function middleware(request: NextRequest) {
       return redirectToAppHost(request, pathname);
     }
 
-    // Allow auth/callback on admin host
-    if (pathname === "/auth/callback") {
+    // Allow API and auth routes on admin host
+    if (pathname.startsWith("/api/") || pathname === "/auth/callback") {
       return NextResponse.next();
     }
 
