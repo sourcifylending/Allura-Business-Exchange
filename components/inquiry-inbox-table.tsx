@@ -7,6 +7,15 @@ export function InquiryInboxTable({
 }: Readonly<{
   records: InquiryRecord[];
 }>) {
+  if (records.length === 0) {
+    return (
+      <div className="rounded-[1.75rem] border border-dashed border-ink-200 bg-ink-50 px-5 py-6 text-sm leading-6 text-ink-600">
+        No inquiries are loaded yet. Once rows exist in Supabase, the inbox table will appear here
+        automatically.
+      </div>
+    );
+  }
+
   return (
     <div className="overflow-hidden rounded-[1.75rem] border border-ink-200 bg-white shadow-soft">
       <table className="w-full border-collapse">
@@ -30,6 +39,9 @@ export function InquiryInboxTable({
               </Td>
               <Td>
                 <div className="text-sm font-medium text-ink-900">{record.asset_interested_in}</div>
+                <div className="mt-1 text-xs tracking-[0.16em] text-ink-500 uppercase">
+                  Buyer: {record.buyer_name ?? "Unassigned"}
+                </div>
                 <div className="mt-2 text-sm text-ink-600">{record.notes_summary}</div>
               </Td>
               <Td>
@@ -66,4 +78,3 @@ function Badge({ children }: Readonly<{ children: React.ReactNode }>) {
     </span>
   );
 }
-

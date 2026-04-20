@@ -1,90 +1,14 @@
+import { randomUUID } from "crypto";
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+import type { BusinessIntakeRow } from "@/lib/supabase/database.types";
+
 export type IntakeStatus = "new" | "in_review" | "needs_info" | "complete";
 
 export type ReviewStatus = "pending" | "clear" | "red_flags" | "hold";
 
-export type BusinessIntakeRecord = Readonly<{
-  id: string;
-  legal_business_name: string;
-  dba: string;
-  industry: string;
-  location: string;
-  years_in_business: string;
-  monthly_revenue_range: string;
-  cash_flow_profit_range: string;
-  reason_for_selling: string;
-  debt_liens_mca_disclosure: string;
-  number_of_employees: string;
-  owner_involvement: string;
-  equipment_assets: string;
-  transferability_notes: string;
-  uploads_placeholder_list: string[];
-  intake_status: IntakeStatus;
-  review_status: ReviewStatus;
-  next_action: string;
-}>;
-
-export const businessIntakeRecords: BusinessIntakeRecord[] = [
-  {
-    id: "biz-01",
-    legal_business_name: "North Shore Home Services LLC",
-    dba: "North Shore Services",
-    industry: "Home Services",
-    location: "Southeast US",
-    years_in_business: "7 years",
-    monthly_revenue_range: "$42k - $55k",
-    cash_flow_profit_range: "$8k - $12k",
-    reason_for_selling: "Owner wants to reduce hands-on work and reposition capital.",
-    debt_liens_mca_disclosure: "No known liens; MCA disclosure pending confirmation.",
-    number_of_employees: "9",
-    owner_involvement: "High, owner still involved in sales and dispatch",
-    equipment_assets: "Service vehicle fleet, field equipment, phone numbers",
-    transferability_notes: "Operations are transferable but owner dependence remains a concern.",
-    uploads_placeholder_list: ["P&L placeholder", "Tax return placeholder", "Equipment list placeholder"],
-    intake_status: "in_review",
-    review_status: "pending",
-    next_action: "Request financials and ownership verification",
-  },
-  {
-    id: "biz-02",
-    legal_business_name: "Blue Pine Digital Marketing Inc",
-    dba: "Blue Pine Digital",
-    industry: "Marketing Services",
-    location: "Midwest US",
-    years_in_business: "5 years",
-    monthly_revenue_range: "$18k - $24k",
-    cash_flow_profit_range: "$4k - $6k",
-    reason_for_selling: "Founder is shifting into a different business line.",
-    debt_liens_mca_disclosure: "No debt disclosed; verification pending.",
-    number_of_employees: "4",
-    owner_involvement: "Moderate",
-    equipment_assets: "Laptops, software subscriptions, client assets",
-    transferability_notes: "Client concentration and owner-led sales need review.",
-    uploads_placeholder_list: ["Client list placeholder", "Service agreement placeholder", "Bank statement placeholder"],
-    intake_status: "needs_info",
-    review_status: "red_flags",
-    next_action: "Clarify customer concentration and debt position",
-  },
-  {
-    id: "biz-03",
-    legal_business_name: "Metro Fleet Solutions LLC",
-    dba: "Metro Fleet",
-    industry: "B2B Services",
-    location: "Northeast US",
-    years_in_business: "10 years",
-    monthly_revenue_range: "$60k - $75k",
-    cash_flow_profit_range: "$12k - $18k",
-    reason_for_selling: "Owner nearing retirement and wants orderly exit.",
-    debt_liens_mca_disclosure: "No liens disclosed; clean up to verify.",
-    number_of_employees: "12",
-    owner_involvement: "Low to moderate",
-    equipment_assets: "Equipment, vehicles, vendor accounts",
-    transferability_notes: "Stronger transfer profile than most intake records.",
-    uploads_placeholder_list: ["Asset list placeholder", "Lease placeholder", "Operating summary placeholder"],
-    intake_status: "complete",
-    review_status: "clear",
-    next_action: "Prepare for underwriting",
-  },
-];
+export type BusinessIntakeRecord = Readonly<Omit<BusinessIntakeRow, "created_at" | "updated_at">>;
 
 export const intakeStatusLabels: Record<IntakeStatus, string> = {
   new: "New",
@@ -100,3 +24,182 @@ export const reviewStatusLabels: Record<ReviewStatus, string> = {
   hold: "Hold",
 };
 
+function hasSupabaseEnv() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+
+  return Boolean(
+    url &&
+      key &&
+      (() => {
+        try {
+          const parsed = new URL(url);
+          return parsed.protocol === "http:" || parsed.protocol === "https:";
+        } catch {
+          return false;
+        }
+      })(),
+  );
+}
+
+function mapBusinessIntakeRowToRecord(row: BusinessIntakeRow): BusinessIntakeRecord {
+  const { created_at: _createdAt, updated_at: _updatedAt, ...record } = row;
+  return record;
+}
+
+type BusinessIntakeFormValues = Omit<BusinessIntakeRow, "id" | "created_at" | "updated_at">;
+
+function readBusinessIntakeFormData(formData: FormData) {
+  const readText = (name: keyof BusinessIntakeFormValues) => {
+    const value = formData.get(name);
+    return typeof value === "string" ? value.trim() : "";
+  };
+
+  const intake_status = readText("intake_status");
+  const review_status = readText("review_status");
+  const uploadsText = readText("uploads_placeholder_list");
+
+  const validIntakeStatuses = ["new", "in_review", "needs_info", "complete"] as const;
+  const validReviewStatuses = ["pending", "clear", "red_flags", "hold"] as const;
+
+  const uploads_placeholder_list = uploadsText
+    ? uploadsText
+        .split(/[\n,]/)
+        .map((entry) => entry.trim())
+        .filter(Boolean)
+    : [];
+
+  const invalid =
+    !readText("legal_business_name") ||
+    !readText("dba") ||
+    !readText("industry") ||
+    !readText("location") ||
+    !readText("years_in_business") ||
+    !readText("monthly_revenue_range") ||
+    !readText("cash_flow_profit_range") ||
+    !readText("reason_for_selling") ||
+    !readText("debt_liens_mca_disclosure") ||
+    !readText("number_of_employees") ||
+    !readText("owner_involvement") ||
+    !readText("equipment_assets") ||
+    !readText("transferability_notes") ||
+    !readText("next_action") ||
+    !validIntakeStatuses.includes(intake_status as (typeof validIntakeStatuses)[number]) ||
+    !validReviewStatuses.includes(review_status as (typeof validReviewStatuses)[number]);
+
+  if (invalid) {
+    return { error: "Please complete all required fields." } as const;
+  }
+
+  return {
+    data: {
+      legal_business_name: readText("legal_business_name"),
+      dba: readText("dba"),
+      industry: readText("industry"),
+      location: readText("location"),
+      years_in_business: readText("years_in_business"),
+      monthly_revenue_range: readText("monthly_revenue_range"),
+      cash_flow_profit_range: readText("cash_flow_profit_range"),
+      reason_for_selling: readText("reason_for_selling"),
+      debt_liens_mca_disclosure: readText("debt_liens_mca_disclosure"),
+      number_of_employees: readText("number_of_employees"),
+      owner_involvement: readText("owner_involvement"),
+      equipment_assets: readText("equipment_assets"),
+      transferability_notes: readText("transferability_notes"),
+      uploads_placeholder_list,
+      intake_status: intake_status as BusinessIntakeRow["intake_status"],
+      review_status: review_status as BusinessIntakeRow["review_status"],
+      next_action: readText("next_action"),
+    } satisfies BusinessIntakeFormValues,
+  } as const;
+}
+
+function readBusinessIntakeId(formData: FormData) {
+  const idValue = formData.get("id");
+  return typeof idValue === "string" ? idValue.trim() : "";
+}
+
+export async function getBusinessIntakeRecords() {
+  if (!hasSupabaseEnv()) {
+    return [];
+  }
+
+  try {
+    const supabase = createClient();
+    const { data, error } = await supabase.from("business_intake").select("*").order("created_at", {
+      ascending: false,
+    });
+
+    if (error || !data) {
+      return [];
+    }
+
+    return data.map(mapBusinessIntakeRowToRecord);
+  } catch {
+    return [];
+  }
+}
+
+export async function createBusinessIntakeRecord(formData: FormData) {
+  "use server";
+
+  const parsed = readBusinessIntakeFormData(formData);
+
+  if ("error" in parsed) {
+    redirect(
+      `/admin/business-submissions?error=${encodeURIComponent(
+        parsed.error ?? "Please complete all required fields.",
+      )}`,
+    );
+  }
+
+  try {
+    const supabase = createClient();
+    const { error } = await supabase.from("business_intake").insert({
+      id: randomUUID(),
+      ...parsed.data,
+    } as never);
+
+    if (error) {
+      redirect("/admin/business-submissions?error=Unable%20to%20save%20the%20new%20intake.");
+    }
+
+    revalidatePath("/admin/business-submissions");
+    redirect("/admin/business-submissions?saved=created");
+  } catch {
+    redirect("/admin/business-submissions?error=Unable%20to%20save%20the%20new%20intake.");
+  }
+}
+
+export async function updateBusinessIntakeRecord(formData: FormData) {
+  "use server";
+
+  const id = readBusinessIntakeId(formData);
+  const parsed = readBusinessIntakeFormData(formData);
+
+  if (!id) {
+    redirect("/admin/business-submissions?error=Missing%20record%20id.");
+  }
+
+  if ("error" in parsed) {
+    redirect(
+      `/admin/business-submissions?error=${encodeURIComponent(
+        parsed.error ?? "Please complete all required fields.",
+      )}`,
+    );
+  }
+
+  try {
+    const supabase = createClient();
+    const { error } = await supabase.from("business_intake").update(parsed.data as never).eq("id", id);
+
+    if (error) {
+      redirect("/admin/business-submissions?error=Unable%20to%20update%20the%20intake.");
+    }
+
+    revalidatePath("/admin/business-submissions");
+    redirect("/admin/business-submissions?saved=updated");
+  } catch {
+    redirect("/admin/business-submissions?error=Unable%20to%20update%20the%20intake.");
+  }
+}

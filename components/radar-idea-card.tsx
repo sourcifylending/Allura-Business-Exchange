@@ -1,10 +1,14 @@
 import type { RadarRecord } from "@/lib/market-radar";
 import { RadarScorePill } from "@/components/radar-score-pill";
+import { RadarIdeaFormFields } from "@/components/radar-idea-form-fields";
+import { updateRadarRecord } from "@/lib/market-radar";
 
 export function RadarIdeaCard({
   record,
+  editable = false,
 }: Readonly<{
   record: RadarRecord;
+  editable?: boolean;
 }>) {
   const statusTone =
     record.status === "approved"
@@ -49,7 +53,17 @@ export function RadarIdeaCard({
         />
         <RadarScorePill label="Status" value={record.status} tone={statusTone} />
       </div>
+
+      {editable ? (
+        <details className="mt-6 rounded-[1.5rem] border border-dashed border-ink-200 bg-ink-50 p-4">
+          <summary className="cursor-pointer text-sm font-semibold tracking-[0.16em] text-accent-700 uppercase">
+            Edit idea
+          </summary>
+          <form action={updateRadarRecord} className="mt-5 grid gap-5">
+            <RadarIdeaFormFields record={record} submitLabel="Save changes" />
+          </form>
+        </details>
+      ) : null}
     </article>
   );
 }
-

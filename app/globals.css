@@ -3,15 +3,15 @@
 @tailwind utilities;
 
 :root {
-  color-scheme: light;
-  --bg: 26 23 20;
-  --surface: 247 244 239;
-  --surface-strong: 255 255 255;
-  --border: 221 213 201;
-  --text: 31 27 23;
-  --muted: 95 86 75;
-  --accent: 49 152 90;
-  --accent-soft: 237 248 242;
+  color-scheme: dark;
+  --bg: 10 11 13;
+  --surface: 18 20 23;
+  --surface-strong: 24 27 31;
+  --border: 49 55 63;
+  --text: 244 239 228;
+  --muted: 177 169 157;
+  --accent: 212 172 92;
+  --accent-soft: 31 26 18;
 }
 
 html {
@@ -22,8 +22,9 @@ body {
   margin: 0;
   min-height: 100vh;
   background:
-    radial-gradient(circle at top left, rgba(49, 152, 90, 0.12), transparent 32%),
-    linear-gradient(180deg, rgb(var(--surface)) 0%, #f2ede6 100%);
+    radial-gradient(circle at top left, rgba(212, 172, 92, 0.16), transparent 28%),
+    radial-gradient(circle at top right, rgba(255, 255, 255, 0.05), transparent 24%),
+    linear-gradient(180deg, rgb(var(--surface)) 0%, rgb(var(--bg)) 100%);
   color: rgb(var(--text));
 }
 
@@ -34,4 +35,13 @@ body {
 ::selection {
   background: rgb(var(--accent));
   color: white;
+}
+
+@layer utilities {
+  .bg-white,
+  .bg-white\/95,
+  .bg-white\/90,
+  .bg-white\/80 {
+    background-color: rgb(var(--surface-strong)) !important;
+  }
 }

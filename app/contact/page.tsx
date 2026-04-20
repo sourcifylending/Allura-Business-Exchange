@@ -5,7 +5,7 @@ export default function ContactPage() {
   return (
     <SiteShell
       eyebrow="Contact"
-      title="Start a conversation"
+      title="Talk to the Allura team"
       description="A simple contact entry point for buyers, sellers, and future approvals."
     >
       <PageCard

@@ -34,20 +34,25 @@ export function RadarStatusBoard({
             <div className="flex items-center justify-between gap-3">
               <h3 className="text-sm font-semibold tracking-[0.2em] text-ink-700 uppercase">
                 {radarStatusLabels[status]}
-              </h3>
-              <span className="rounded-full border border-ink-200 bg-white px-2.5 py-1 text-xs font-semibold text-ink-700">
-                {grouped[status].length}
-              </span>
-            </div>
+            </h3>
+            <span className="rounded-full border border-ink-200 bg-white px-2.5 py-1 text-xs font-semibold text-ink-700">
+              {grouped[status].length}
+            </span>
+          </div>
+          {grouped[status].length > 0 ? (
             <div className="mt-4 grid gap-3">
               {grouped[status].map((record) => (
                 <RadarIdeaCard key={record.id} record={record} />
               ))}
             </div>
+          ) : (
+            <div className="mt-4 rounded-2xl border border-dashed border-ink-200 bg-white px-4 py-5 text-sm leading-6 text-ink-500">
+              No records in this status yet.
+            </div>
+          )}
           </div>
         ))}
       </div>
     </section>
   );
 }
-

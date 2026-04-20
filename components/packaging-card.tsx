@@ -1,10 +1,20 @@
 import type { PackagingRecord } from "@/lib/packaging";
+import type { AssetRegistryRecord } from "@/lib/asset-registry";
+import type { SellerApplicationOption } from "@/lib/packaging";
+import { PackagingFormFields } from "@/components/packaging-form-fields";
 import { PackagingStatusPill } from "@/components/packaging-status-pill";
+import { updatePackagingRecord } from "@/lib/packaging";
 
 export function PackagingCard({
   record,
+  editable = false,
+  assetOptions = [],
+  sellerOptions = [],
 }: Readonly<{
   record: PackagingRecord;
+  editable?: boolean;
+  assetOptions?: AssetRegistryRecord[];
+  sellerOptions?: SellerApplicationOption[];
 }>) {
   return (
     <article className="rounded-[1.75rem] border border-ink-200 bg-white p-6 shadow-soft">
@@ -14,6 +24,7 @@ export function PackagingCard({
             Packaging Queue
           </div>
           <h3 className="mt-2 text-xl font-semibold text-ink-950">{record.asset_name}</h3>
+          <div className="mt-1 text-sm text-ink-600">{record.asset_slug}</div>
         </div>
         <PackagingStatusPill status={record.status} />
       </div>
@@ -24,6 +35,7 @@ export function PackagingCard({
         <Info label="One-line pitch" value={record.one_line_pitch} />
         <Info label="Buyer type" value={record.buyer_type} />
         <Info label="Asking price" value={record.asking_price} />
+        <Info label="Portal visibility" value={record.portal_visible ? "Visible" : "Hidden"} />
         <Info label="Screenshots" value={record.screenshots} />
         <Info label="Demo link" value={record.demo_link} />
         <Info label="Brand kit" value={record.logo_brand_kit} />
@@ -39,6 +51,34 @@ export function PackagingCard({
       <div className="mt-5 rounded-2xl border border-ink-200 bg-white p-4 text-sm text-ink-600">
         Short listing description: {record.short_listing_description}
       </div>
+
+      <div className="mt-4 rounded-2xl border border-ink-200 bg-[rgb(var(--surface))] p-4 text-sm leading-6 text-ink-700">
+        Portal teaser summary: {record.portal_summary || "Not set yet. Add a sanitized teaser for buyer portal users."}
+      </div>
+
+      <div className="mt-4 rounded-2xl border border-ink-200 bg-[rgb(var(--surface))] p-4 text-sm leading-6 text-ink-700">
+        Seller link:{" "}
+        {record.seller_application_id
+          ? sellerOptions.find((seller) => seller.id === record.seller_application_id)?.business_name ??
+            "Linked seller application"
+          : "Not linked yet"}
+      </div>
+
+      {editable ? (
+        <details className="mt-5 rounded-[1.5rem] border border-dashed border-ink-200 bg-ink-50 p-4">
+          <summary className="cursor-pointer text-sm font-semibold tracking-[0.16em] text-accent-700 uppercase">
+            Edit packaging
+          </summary>
+          <form action={updatePackagingRecord} className="mt-5 grid gap-5">
+            <PackagingFormFields
+              record={record}
+              assetOptions={assetOptions}
+              sellerOptions={sellerOptions}
+              submitLabel="Save packaging"
+            />
+          </form>
+        </details>
+      ) : null}
     </article>
   );
 }
@@ -72,4 +112,3 @@ function Mini({
     </div>
   );
 }
-

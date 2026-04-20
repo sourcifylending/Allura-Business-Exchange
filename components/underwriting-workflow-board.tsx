@@ -41,7 +41,7 @@ export function UnderwritingWorkflowBoard({
             </div>
             <div className="mt-4 grid gap-3">
               {grouped[status].map((record) => (
-                <UnderwritingCard key={record.id} record={record} />
+                <UnderwritingCard key={record.id} record={record} editable />
               ))}
             </div>
           </div>
@@ -50,4 +50,3 @@ export function UnderwritingWorkflowBoard({
     </section>
   );
 }
-

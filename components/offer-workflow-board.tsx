@@ -1,15 +1,19 @@
 import { OfferCard } from "@/components/offer-card";
 import { SectionHeading } from "@/components/section-heading";
-import { offerStageLabels, type OfferRecord, type OfferStage } from "@/lib/closeout-ops";
+import { offerStageLabels, type BuyerRecord, type OfferRecord, type OfferStage } from "@/lib/closeout-ops";
 
 export function OfferWorkflowBoard({
   title,
   description,
   records,
+  editable = false,
+  buyerOptions = [],
 }: Readonly<{
   title: string;
   description: string;
   records: OfferRecord[];
+  editable?: boolean;
+  buyerOptions?: BuyerRecord[];
 }>) {
   const grouped = records.reduce<Record<OfferStage, OfferRecord[]>>(
     (acc, offer) => {
@@ -38,15 +42,20 @@ export function OfferWorkflowBoard({
                 {grouped[stage].length}
               </span>
             </div>
-            <div className="mt-4 grid gap-3">
-              {grouped[stage].map((offer) => (
-                <OfferCard key={offer.id} offer={offer} />
-              ))}
-            </div>
+            {grouped[stage].length > 0 ? (
+              <div className="mt-4 grid gap-3">
+                {grouped[stage].map((offer) => (
+                  <OfferCard key={offer.id} offer={offer} editable={editable} buyerOptions={buyerOptions} />
+                ))}
+              </div>
+            ) : (
+              <div className="mt-4 rounded-2xl border border-dashed border-ink-200 bg-white px-4 py-5 text-sm leading-6 text-ink-500">
+                No records in this stage yet.
+              </div>
+            )}
           </div>
         ))}
       </div>
     </section>
   );
 }
-

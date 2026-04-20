@@ -1,15 +1,19 @@
 import { InquiryCard } from "@/components/inquiry-card";
 import { SectionHeading } from "@/components/section-heading";
-import { inquiryStageLabels, type InquiryRecord, type InquiryStage } from "@/lib/buyer-ops";
+import { inquiryStageLabels, type BuyerRecord, type InquiryRecord, type InquiryStage } from "@/lib/buyer-ops";
 
 export function InquiryStageBoard({
   title,
   description,
   records,
+  editable = false,
+  buyerOptions = [],
 }: Readonly<{
   title: string;
   description: string;
   records: InquiryRecord[];
+  editable?: boolean;
+  buyerOptions?: BuyerRecord[];
 }>) {
   const grouped = records.reduce<Record<InquiryStage, InquiryRecord[]>>(
     (acc, inquiry) => {
@@ -39,15 +43,25 @@ export function InquiryStageBoard({
                 {grouped[stage].length}
               </span>
             </div>
-            <div className="mt-4 grid gap-3">
-              {grouped[stage].map((inquiry) => (
-                <InquiryCard key={inquiry.id} inquiry={inquiry} />
-              ))}
-            </div>
+            {grouped[stage].length > 0 ? (
+              <div className="mt-4 grid gap-3">
+                {grouped[stage].map((inquiry) => (
+                  <InquiryCard
+                    key={inquiry.id}
+                    inquiry={inquiry}
+                    editable={editable}
+                    buyerOptions={buyerOptions}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="mt-4 rounded-2xl border border-dashed border-ink-200 bg-white px-4 py-5 text-sm leading-6 text-ink-500">
+                No records in this stage yet.
+              </div>
+            )}
           </div>
         ))}
       </div>
     </section>
   );
 }
-

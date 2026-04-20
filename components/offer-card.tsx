@@ -1,10 +1,19 @@
+import type { ReactNode } from "react";
+import { OfferFormFields } from "@/components/offer-form-fields";
 import { OfferStatusPill } from "@/components/offer-status-pill";
-import type { OfferRecord } from "@/lib/closeout-ops";
+import { OfferDispositionPill } from "@/components/offer-disposition-pill";
+import { type BuyerRecord, type OfferRecord, updateOfferRecord } from "@/lib/closeout-ops";
 
 export function OfferCard({
   offer,
+  editable = false,
+  buyerOptions = [],
+  returnTo,
 }: Readonly<{
   offer: OfferRecord;
+  editable?: boolean;
+  buyerOptions?: BuyerRecord[];
+  returnTo?: string;
 }>) {
   return (
     <article className="rounded-[1.75rem] border border-ink-200 bg-white p-6 shadow-soft">
@@ -30,7 +39,32 @@ export function OfferCard({
         <Mini label="Accepted terms" value={offer.accepted_terms} />
         <Mini label="Owner" value={offer.owner} />
         <Mini label="Next action" value={offer.next_action} />
+        {"disposition_status" in offer ? (
+          <Mini
+            label="Disposition"
+            value={
+              offer.disposition_status ? (
+                <span className="inline-flex items-center gap-2">
+                  <OfferDispositionPill status={offer.disposition_status} />
+                </span>
+              ) : (
+                "Not set"
+              )
+            }
+          />
+        ) : null}
       </div>
+
+      {editable ? (
+        <details className="mt-5 rounded-[1.5rem] border border-dashed border-ink-200 bg-ink-50 p-4">
+          <summary className="cursor-pointer text-sm font-semibold tracking-[0.16em] text-accent-700 uppercase">
+            Edit offer
+          </summary>
+          <form action={updateOfferRecord} className="mt-5 grid gap-5">
+            <OfferFormFields record={offer} buyerOptions={buyerOptions} returnTo={returnTo} submitLabel="Save offer" />
+          </form>
+        </details>
+      ) : null}
     </article>
   );
 }
@@ -55,7 +89,7 @@ function Mini({
   value,
 }: Readonly<{
   label: string;
-  value: string;
+  value: ReactNode;
 }>) {
   return (
     <div className="rounded-2xl border border-ink-200 bg-white p-4">
@@ -64,4 +98,3 @@ function Mini({
     </div>
   );
 }
-

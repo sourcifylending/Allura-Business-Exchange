@@ -1,10 +1,13 @@
+import { BuyerFormFields } from "@/components/buyer-form-fields";
 import { BuyerStatusPill } from "@/components/buyer-status-pill";
-import type { BuyerRecord } from "@/lib/buyer-ops";
+import { buyerTypeLabels, proofOfFundsLabels, type BuyerRecord, updateBuyerRecord } from "@/lib/buyer-ops";
 
 export function BuyerCard({
   buyer,
+  editable = false,
 }: Readonly<{
   buyer: BuyerRecord;
+  editable?: boolean;
 }>) {
   return (
     <article className="rounded-[1.75rem] border border-ink-200 bg-white p-6 shadow-soft">
@@ -14,16 +17,16 @@ export function BuyerCard({
             Buyer Profile
           </div>
           <h3 className="mt-2 text-xl font-semibold text-ink-950">{buyer.buyer_name}</h3>
-          <div className="mt-1 text-sm text-ink-600">{buyer.buyer_type}</div>
+          <div className="mt-1 text-sm text-ink-600">{buyerTypeLabels[buyer.buyer_type]}</div>
         </div>
         <BuyerStatusPill status={buyer.current_stage} />
       </div>
 
       <div className="mt-5 grid gap-3 sm:grid-cols-2">
         <Detail label="Budget" value={buyer.budget} />
-        <Detail label="Proof of funds" value={buyer.proof_of_funds_status} />
+        <Detail label="Proof of funds" value={proofOfFundsLabels[buyer.proof_of_funds_status]} />
         <Detail label="Urgency" value={buyer.urgency} />
-        <Detail label="Operator / Investor" value={buyer.operator_vs_investor} />
+        <Detail label="Operator / Investor" value={buyerTypeLabels[buyer.operator_or_investor]} />
       </div>
 
       <div className="mt-5 grid gap-3 rounded-[1.5rem] border border-dashed border-ink-200 bg-ink-50 p-4">
@@ -32,6 +35,17 @@ export function BuyerCard({
         <Mini label="Inquiry history" value={buyer.inquiry_history} />
         <Mini label="Next action" value={buyer.next_action} />
       </div>
+
+      {editable ? (
+        <details className="mt-5 rounded-[1.5rem] border border-dashed border-ink-200 bg-ink-50 p-4">
+          <summary className="cursor-pointer text-sm font-semibold tracking-[0.16em] text-accent-700 uppercase">
+            Edit buyer
+          </summary>
+          <form action={updateBuyerRecord} className="mt-5 grid gap-5">
+            <BuyerFormFields record={buyer} submitLabel="Save buyer" />
+          </form>
+        </details>
+      ) : null}
     </article>
   );
 }
@@ -65,4 +79,3 @@ function Mini({
     </div>
   );
 }
-

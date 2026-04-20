@@ -22,7 +22,7 @@ export default function OpportunitiesPage() {
           description="Operating businesses stay sanitized by default and only expose limited public details."
           opportunities={businessTeaserOpportunities}
         />
-        <section className="rounded-[1.75rem] border border-ink-200 bg-white p-6 shadow-soft">
+        <section className="rounded-[1.75rem] border border-ink-200 bg-[rgba(18,20,23,0.96)] p-6 shadow-soft">
           <div className="text-xs font-semibold tracking-[0.28em] text-accent-700 uppercase">
             Free Account Feed Shell
           </div>

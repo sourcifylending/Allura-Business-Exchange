@@ -1,3 +1,9 @@
+import { randomUUID } from "crypto";
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+import type { AssetRegistryRow } from "@/lib/supabase/database.types";
+
 export type OwnershipType = "individual" | "llc" | "dba";
 
 export type CodeStatus = "not_started" | "in_progress" | "ready" | "needs_work";
@@ -45,27 +51,47 @@ export type AssetIntakeRecord = Readonly<{
   demo_url: string;
 }>;
 
-export type AssetRegistryRecord = Readonly<{
-  asset_id: string;
-  asset_name: string;
-  slug: string;
-  niche: string;
-  target_buyer_type: string;
-  current_stage: AssetStage;
-  local_path: string;
-  repo_url: string;
-  live_url: string;
-  demo_url: string;
-  domain: string;
-  hosting_status: string;
-  code_status: CodeStatus;
-  packaging_status: "incomplete" | "draft_ready" | "approved";
-  listing_status: "not_ready" | "draft" | "listed";
-  asking_price: string;
-  ownership_type: OwnershipType;
-  transfer_status: TransferStatus;
-  notes: string;
-}>;
+export type AssetRegistryRecord = Readonly<Omit<AssetRegistryRow, "created_at" | "updated_at">>;
+
+export const assetHostingStatusLabels = {
+  not_deployed: "Not Deployed",
+  local: "Local",
+  staging: "Staging",
+  live: "Live",
+  held: "Held",
+} as const;
+
+export const assetCodeStatusLabels = {
+  not_started: "Not Started",
+  in_progress: "In Progress",
+  ready: "Ready",
+  needs_work: "Needs Work",
+} as const;
+
+export const assetPackagingStatusLabels = {
+  incomplete: "Incomplete",
+  draft_ready: "Draft Ready",
+  approved: "Approved",
+} as const;
+
+export const assetListingStatusLabels = {
+  not_ready: "Not Ready",
+  draft: "Draft",
+  listed: "Listed",
+} as const;
+
+export const assetOwnershipTypeLabels = {
+  individual: "Individual",
+  llc: "LLC",
+  dba: "DBA",
+} as const;
+
+export const assetTransferStatusLabels = {
+  not_ready: "Not Ready",
+  drafting: "Drafting",
+  ready: "Ready",
+  in_progress: "In Progress",
+} as const;
 
 export const assetIntakeRecords: AssetIntakeRecord[] = [
   {
@@ -160,71 +186,202 @@ export const assetIntakeRecords: AssetIntakeRecord[] = [
   },
 ];
 
-export const assetRegistryRecords: AssetRegistryRecord[] = [
-  {
-    asset_id: "A-001",
-    asset_name: "ReplyPilot",
-    slug: "replypilot",
-    niche: "Service businesses",
-    target_buyer_type: "Owner-operators",
-    current_stage: "ready_to_list",
-    local_path: "02-assets/replypilot",
-    repo_url: "https://repo.local/replypilot",
-    live_url: "https://replypilot.example",
-    demo_url: "https://demo.local/replypilot",
-    domain: "replypilot.example",
-    hosting_status: "staging",
-    code_status: "ready",
-    packaging_status: "draft_ready",
-    listing_status: "draft",
-    asking_price: "$18,000",
-    ownership_type: "individual",
-    transfer_status: "drafting",
-    notes: "Strong candidate for first listing batch.",
-  },
-  {
-    asset_id: "A-002",
-    asset_name: "ScopeFlow",
-    slug: "scopeflow",
-    niche: "Agencies",
-    target_buyer_type: "Agency founders",
-    current_stage: "build",
-    local_path: "02-assets/scopeflow",
-    repo_url: "https://repo.local/scopeflow",
-    live_url: "https://scopeflow.example",
-    demo_url: "https://demo.local/scopeflow",
-    domain: "scopeflow.example",
-    hosting_status: "local",
-    code_status: "in_progress",
-    packaging_status: "incomplete",
-    listing_status: "not_ready",
-    asking_price: "$24,500",
-    ownership_type: "llc",
-    transfer_status: "not_ready",
-    notes: "Needs packaging and transfer checklist completion.",
-  },
-  {
-    asset_id: "A-003",
-    asset_name: "BriefSpark",
-    slug: "briefspark",
-    niche: "Operations teams",
-    target_buyer_type: "Ops managers",
-    current_stage: "research",
-    local_path: "02-assets/briefspark",
-    repo_url: "https://repo.local/briefspark",
-    live_url: "https://briefspark.example",
-    demo_url: "https://demo.local/briefspark",
-    domain: "briefspark.example",
-    hosting_status: "local",
-    code_status: "needs_work",
-    packaging_status: "incomplete",
-    listing_status: "not_ready",
-    asking_price: "$12,000",
-    ownership_type: "dba",
-    transfer_status: "not_ready",
-    notes: "Hold until documentation and admin transferability improve.",
-  },
-];
+function hasSupabaseEnv() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+
+  return Boolean(
+    url &&
+      key &&
+      (() => {
+        try {
+          const parsed = new URL(url);
+          return parsed.protocol === "http:" || parsed.protocol === "https:";
+        } catch {
+          return false;
+        }
+      })(),
+  );
+}
+
+function mapAssetRegistryRowToRecord(row: AssetRegistryRow): AssetRegistryRecord {
+  const { created_at: _createdAt, updated_at: _updatedAt, ...record } = row;
+  return record;
+}
+
+type AssetRegistryFormValues = Omit<AssetRegistryRow, "id" | "asset_id" | "created_at" | "updated_at">;
+
+function readAssetRegistryFormData(formData: FormData) {
+  const readText = (name: keyof AssetRegistryFormValues) => {
+    const value = formData.get(name);
+    return typeof value === "string" ? value.trim() : "";
+  };
+
+  const asset_name = readText("asset_name");
+  const slug = readText("slug");
+  const niche = readText("niche");
+  const target_buyer_type = readText("target_buyer_type");
+  const current_stage = readText("current_stage");
+  const local_path = readText("local_path");
+  const repo_url = readText("repo_url");
+  const live_url = readText("live_url");
+  const demo_url = readText("demo_url");
+  const domain = readText("domain");
+  const hosting_status = readText("hosting_status");
+  const code_status = readText("code_status");
+  const packaging_status = readText("packaging_status");
+  const listing_status = readText("listing_status");
+  const asking_price = readText("asking_price");
+  const ownership_type = readText("ownership_type");
+  const transfer_status = readText("transfer_status");
+  const notes = readText("notes");
+
+  const validStages: AssetStage[] = ["idea", "research", "build", "packaging", "ready_to_list", "listed"];
+  const validHostingStatuses = ["not_deployed", "local", "staging", "live", "held"] as const;
+  const validCodeStatuses = ["not_started", "in_progress", "ready", "needs_work"] as const;
+  const validPackagingStatuses = ["incomplete", "draft_ready", "approved"] as const;
+  const validListingStatuses = ["not_ready", "draft", "listed"] as const;
+  const validOwnershipTypes = ["individual", "llc", "dba"] as const;
+  const validTransferStatuses = ["not_ready", "drafting", "ready", "in_progress"] as const;
+
+  const invalid =
+    !asset_name ||
+    !slug ||
+    !niche ||
+    !target_buyer_type ||
+    !validStages.includes(current_stage as AssetStage) ||
+    !local_path ||
+    !repo_url ||
+    !live_url ||
+    !demo_url ||
+    !domain ||
+    !validHostingStatuses.includes(hosting_status as (typeof validHostingStatuses)[number]) ||
+    !validCodeStatuses.includes(code_status as (typeof validCodeStatuses)[number]) ||
+    !validPackagingStatuses.includes(packaging_status as (typeof validPackagingStatuses)[number]) ||
+    !validListingStatuses.includes(listing_status as (typeof validListingStatuses)[number]) ||
+    !asking_price ||
+    !validOwnershipTypes.includes(ownership_type as (typeof validOwnershipTypes)[number]) ||
+    !validTransferStatuses.includes(transfer_status as (typeof validTransferStatuses)[number]) ||
+    !notes;
+
+  if (invalid) {
+    return { error: "Please complete all required fields." } as const;
+  }
+
+  return {
+    data: {
+      asset_name,
+      slug,
+      niche,
+      target_buyer_type,
+      current_stage: current_stage as AssetStage,
+      local_path,
+      repo_url,
+      live_url,
+      demo_url,
+      domain,
+      hosting_status: hosting_status as AssetRegistryRow["hosting_status"],
+      code_status: code_status as AssetRegistryRow["code_status"],
+      packaging_status: packaging_status as AssetRegistryRow["packaging_status"],
+      listing_status: listing_status as AssetRegistryRow["listing_status"],
+      asking_price,
+      ownership_type: ownership_type as AssetRegistryRow["ownership_type"],
+      transfer_status: transfer_status as AssetRegistryRow["transfer_status"],
+      notes,
+    } satisfies AssetRegistryFormValues,
+  } as const;
+}
+
+function readAssetRegistryId(formData: FormData) {
+  const idValue = formData.get("id");
+  return typeof idValue === "string" ? idValue.trim() : "";
+}
+
+export async function getAssetRegistryRecords() {
+  if (!hasSupabaseEnv()) {
+    return [];
+  }
+
+  try {
+    const supabase = createClient();
+    const { data, error } = await supabase.from("asset_registry").select("*").order("created_at", {
+      ascending: false,
+    });
+
+    if (error || !data) {
+      return [];
+    }
+
+    return data.map(mapAssetRegistryRowToRecord);
+  } catch {
+    return [];
+  }
+}
+
+export async function createAssetRegistryRecord(formData: FormData) {
+  "use server";
+
+  const parsed = readAssetRegistryFormData(formData);
+
+  if ("error" in parsed) {
+    redirect(
+      `/admin/asset-drafts?error=${encodeURIComponent(
+        parsed.error ?? "Please complete all required fields.",
+      )}`,
+    );
+  }
+
+  try {
+    const supabase = createClient();
+    const { error } = await supabase.from("asset_registry").insert({
+      id: randomUUID(),
+      asset_id: `asset-${randomUUID()}`,
+      ...parsed.data,
+    } as never);
+
+    if (error) {
+      redirect("/admin/asset-drafts?error=Unable%20to%20save%20the%20new%20asset.");
+    }
+
+    revalidatePath("/admin/asset-drafts");
+    redirect("/admin/asset-drafts?saved=created");
+  } catch {
+    redirect("/admin/asset-drafts?error=Unable%20to%20save%20the%20new%20asset.");
+  }
+}
+
+export async function updateAssetRegistryRecord(formData: FormData) {
+  "use server";
+
+  const id = readAssetRegistryId(formData);
+  const parsed = readAssetRegistryFormData(formData);
+
+  if (!id) {
+    redirect("/admin/asset-drafts?error=Missing%20record%20id.");
+  }
+
+  if ("error" in parsed) {
+    redirect(
+      `/admin/asset-drafts?error=${encodeURIComponent(
+        parsed.error ?? "Please complete all required fields.",
+      )}`,
+    );
+  }
+
+  try {
+    const supabase = createClient();
+    const { error } = await supabase.from("asset_registry").update(parsed.data as never).eq("id", id);
+
+    if (error) {
+      redirect("/admin/asset-drafts?error=Unable%20to%20update%20the%20asset.");
+    }
+
+    revalidatePath("/admin/asset-drafts");
+    redirect("/admin/asset-drafts?saved=updated");
+  } catch {
+    redirect("/admin/asset-drafts?error=Unable%20to%20update%20the%20asset.");
+  }
+}
 
 export const assetStageOrder: AssetStage[] = [
   "idea",
@@ -243,4 +400,3 @@ export const assetStageLabels: Record<AssetStage, string> = {
   ready_to_list: "Ready to List",
   listed: "Listed",
 };
-

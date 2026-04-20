@@ -1,0 +1,51 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - generic [ref=e4]:
+        - link "Allura Business Exchange" [ref=e5] [cursor=pointer]:
+          - /url: /
+          - img "Allura Business Exchange" [ref=e7]
+        - navigation [ref=e8]:
+          - link "About" [ref=e9] [cursor=pointer]:
+            - /url: /about
+          - link "How It Works" [ref=e10] [cursor=pointer]:
+            - /url: /how-it-works
+          - link "Buyers" [ref=e11] [cursor=pointer]:
+            - /url: /buyers
+          - link "Sellers" [ref=e12] [cursor=pointer]:
+            - /url: /sellers
+          - link "Digital Assets" [ref=e13] [cursor=pointer]:
+            - /url: /digital-assets
+          - link "Opportunities" [ref=e14] [cursor=pointer]:
+            - /url: /opportunities
+          - link "Contact" [ref=e15] [cursor=pointer]:
+            - /url: /contact
+    - main [ref=e16]:
+      - generic [ref=e17]:
+        - generic [ref=e18]:
+          - paragraph [ref=e19]: Admin Access
+          - heading "Sign in to Allura" [level=1] [ref=e20]
+          - paragraph [ref=e21]: Internal admin access only. Public pages remain open.
+        - generic [ref=e22]:
+          - generic [ref=e23]:
+            - img "Allura Business Exchange brand mark" [ref=e25]
+            - generic [ref=e26]:
+              - generic [ref=e27]: Product Focus
+              - generic [ref=e28]: AI assets first. Business opportunities second.
+          - generic [ref=e29]: A controlled exchange designed for speed from idea to sale, with clean packaging and simple transfer workflows.
+          - generic [ref=e30]:
+            - generic [ref=e31]: Controlled intake
+            - generic [ref=e32]: Branded listings
+            - generic [ref=e33]: Simple transfers
+      - generic [ref=e34]:
+        - heading "Admin sign-in" [level=2] [ref=e36]
+        - paragraph [ref=e37]: Use your internal admin email and password.
+        - generic [ref=e39]:
+          - generic [ref=e40]:
+            - text: Email
+            - textbox "Email" [ref=e41]
+          - generic [ref=e42]:
+            - text: Password
+            - textbox "Password" [ref=e43]
+          - button "Sign in" [ref=e44] [cursor=pointer]
+  - alert [ref=e45]

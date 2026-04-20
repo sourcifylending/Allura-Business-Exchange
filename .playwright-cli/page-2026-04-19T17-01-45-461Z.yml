@@ -1,0 +1,121 @@
+- generic [active] [ref=e1]:
+  - alert [ref=e45]
+  - generic [ref=e47]:
+    - complementary [ref=e48]:
+      - link "Allura Allura Admin Exchange OS" [ref=e49] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e50]:
+          - img "Allura" [ref=e52]
+          - generic [ref=e53]:
+            - generic [ref=e54]: Allura Admin
+            - generic [ref=e55]: Exchange OS
+      - navigation [ref=e56]:
+        - link "Dashboard" [ref=e57] [cursor=pointer]:
+          - /url: /admin
+        - link "Applications Review" [ref=e58] [cursor=pointer]:
+          - /url: /admin/applications
+        - link "Market Radar" [ref=e59] [cursor=pointer]:
+          - /url: /admin/market-radar
+        - link "AI Asset Drafts" [ref=e60] [cursor=pointer]:
+          - /url: /admin/asset-drafts
+        - link "AI Asset Build Pipeline" [ref=e61] [cursor=pointer]:
+          - /url: /admin/build-pipeline
+        - link "Packaging Center" [ref=e62] [cursor=pointer]:
+          - /url: /admin/packaging
+        - link "AI Asset Listings" [ref=e63] [cursor=pointer]:
+          - /url: /admin/listings
+        - link "Buyer Discovery" [ref=e64] [cursor=pointer]:
+          - /url: /admin/opportunities
+        - link "Business Intake" [ref=e65] [cursor=pointer]:
+          - /url: /admin/business-submissions
+        - link "Underwriting" [ref=e66] [cursor=pointer]:
+          - /url: /admin/underwriting
+        - link "Buyers" [ref=e67] [cursor=pointer]:
+          - /url: /admin/buyers
+        - link "Inquiry Inbox" [ref=e68] [cursor=pointer]:
+          - /url: /admin/inquiries
+        - link "Deal Room" [ref=e69] [cursor=pointer]:
+          - /url: /admin/deal-room
+        - link "Offer Desk" [ref=e70] [cursor=pointer]:
+          - /url: /admin/offers
+        - link "Contracts" [ref=e71] [cursor=pointer]:
+          - /url: /admin/contracts
+        - link "Transfer Desk" [ref=e72] [cursor=pointer]:
+          - /url: /admin/transfers
+        - link "Documents" [ref=e73] [cursor=pointer]:
+          - /url: /admin/documents
+        - link "Tasks" [ref=e74] [cursor=pointer]:
+          - /url: /admin/tasks
+        - link "CRM" [ref=e75] [cursor=pointer]:
+          - /url: /admin/crm
+        - link "Dialer" [ref=e76] [cursor=pointer]:
+          - /url: /admin/dialer
+        - link "Settings" [ref=e77] [cursor=pointer]:
+          - /url: /admin/settings
+      - generic [ref=e78]: Placeholder admin shell only. No auth, database, or external integrations yet.
+    - generic [ref=e79]:
+      - banner [ref=e80]:
+        - generic [ref=e81]:
+          - generic [ref=e82]:
+            - generic [ref=e83]: Internal Portal
+            - generic [ref=e84]: Dashboard Placeholder
+            - paragraph [ref=e85]: Central command center for Market Radar, asset packaging, listings, buyer activity, and transfer operations in later phases.
+          - generic [ref=e86]:
+            - generic [ref=e87]: Focus
+            - generic [ref=e88]: AI assets first, business lane secondary
+      - generic [ref=e89]:
+        - generic [ref=e90]:
+          - heading "Dashboard" [level=1] [ref=e91]
+          - paragraph [ref=e92]: A clean command center for Allura's internal operating system, with AI asset flow front and center.
+        - generic [ref=e93]:
+          - generic [ref=e94]:
+            - generic [ref=e95]: New Ideas
+            - generic [ref=e97]: Placeholder metric card.
+          - generic [ref=e98]:
+            - generic [ref=e99]: Ideas Approved to Build
+            - generic [ref=e101]: Placeholder metric card.
+          - generic [ref=e102]:
+            - generic [ref=e103]: AI Assets In Build
+            - generic [ref=e105]: Placeholder metric card.
+          - generic [ref=e106]:
+            - generic [ref=e107]: AI Assets Ready to List
+            - generic [ref=e109]: Placeholder metric card.
+          - generic [ref=e110]:
+            - generic [ref=e111]: AI Asset Buyer Inquiries
+            - generic [ref=e113]: Placeholder metric card.
+          - generic [ref=e114]:
+            - generic [ref=e115]: Active Listings
+            - generic [ref=e117]: Placeholder metric card.
+          - generic [ref=e118]:
+            - generic [ref=e119]: Offers In Progress
+            - generic [ref=e121]: Placeholder metric card.
+          - generic [ref=e122]:
+            - generic [ref=e123]: Contracts Pending
+            - generic [ref=e125]: Placeholder metric card.
+          - generic [ref=e126]:
+            - generic [ref=e127]: Payments Pending
+            - generic [ref=e129]: Placeholder metric card.
+          - generic [ref=e130]:
+            - generic [ref=e131]: Transfers In Progress
+            - generic [ref=e133]: Placeholder metric card.
+          - generic [ref=e134]:
+            - generic [ref=e135]: Business Seller Submissions
+            - generic [ref=e137]: Placeholder metric card.
+          - generic [ref=e138]:
+            - generic [ref=e139]: Tasks Due
+            - generic [ref=e141]: Placeholder metric card.
+        - generic [ref=e142]:
+          - generic [ref=e143]: Priority Stack
+          - generic [ref=e144]:
+            - generic [ref=e145]:
+              - generic [ref=e146]: New Ideas
+              - generic [ref=e147]: Pinned to the top of the admin flow.
+            - generic [ref=e148]:
+              - generic [ref=e149]: AI Assets In Build
+              - generic [ref=e150]: Pinned to the top of the admin flow.
+            - generic [ref=e151]:
+              - generic [ref=e152]: AI Assets Ready to List
+              - generic [ref=e153]: Pinned to the top of the admin flow.
+            - generic [ref=e154]:
+              - generic [ref=e155]: AI Asset Buyer Inquiries
+              - generic [ref=e156]: Pinned to the top of the admin flow.

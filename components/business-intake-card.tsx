@@ -1,10 +1,14 @@
 import { BusinessIntakeStatusPill, BusinessReviewStatusPill } from "@/components/business-intake-status-pill";
+import { BusinessIntakeFormFields } from "@/components/business-intake-form-fields";
 import type { BusinessIntakeRecord } from "@/lib/business-intake";
+import { updateBusinessIntakeRecord } from "@/lib/business-intake";
 
 export function BusinessIntakeCard({
   record,
+  editable = false,
 }: Readonly<{
   record: BusinessIntakeRecord;
+  editable?: boolean;
 }>) {
   return (
     <article className="rounded-[1.75rem] border border-ink-200 bg-white p-6 shadow-soft">
@@ -43,6 +47,17 @@ export function BusinessIntakeCard({
       <div className="mt-5 rounded-2xl border border-ink-200 bg-white p-4 text-sm text-ink-600">
         Upload placeholders: {record.uploads_placeholder_list.join(", ")}
       </div>
+
+      {editable ? (
+        <details className="mt-5 rounded-[1.5rem] border border-dashed border-ink-200 bg-ink-50 p-4">
+          <summary className="cursor-pointer text-sm font-semibold tracking-[0.16em] text-accent-700 uppercase">
+            Edit intake
+          </summary>
+          <form action={updateBusinessIntakeRecord} className="mt-5 grid gap-5">
+            <BusinessIntakeFormFields record={record} submitLabel="Save intake" />
+          </form>
+        </details>
+      ) : null}
     </article>
   );
 }
@@ -76,4 +91,3 @@ function Mini({
     </div>
   );
 }
-

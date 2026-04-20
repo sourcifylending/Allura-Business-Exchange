@@ -1,5 +1,8 @@
+import { HistoryFeed } from "@/components/history-feed";
 import { AdminMetricCard } from "@/components/admin-metric-card";
 import { AdminPageHeader } from "@/components/admin-page-header";
+import { PageCard } from "@/components/page-card";
+import { getAdminActivityHistory, summarizeHistory } from "@/lib/history";
 
 const cards = [
   "New Ideas",
@@ -16,7 +19,11 @@ const cards = [
   "Tasks Due",
 ];
 
-export default function AdminPage() {
+export default async function AdminPage() {
+  const history = await getAdminActivityHistory();
+  const summary = summarizeHistory(history);
+  const recent = history.slice(0, 3);
+
   return (
     <div className="grid gap-6">
       <AdminPageHeader
@@ -28,6 +35,24 @@ export default function AdminPage() {
           <AdminMetricCard key={card} label={card} />
         ))}
       </section>
+
+      <PageCard title="Recent activity" description="A compact readout of the latest derived audit events.">
+        <div className="grid gap-3 sm:grid-cols-4">
+          <Metric label="Total" value={String(summary.total)} />
+          <Metric label="Recent" value={String(summary.recent)} />
+          <Metric label="Completed" value={String(summary.completed)} />
+          <Metric label="Overdue" value={String(summary.overdue)} />
+        </div>
+        <div className="mt-5">
+          <HistoryFeed
+            events={recent}
+            compact
+            emptyTitle="No recent activity"
+            emptyDescription="Meaningful events will appear here once the deal chain starts moving."
+          />
+        </div>
+      </PageCard>
+
       <div className="rounded-[1.75rem] border border-ink-200 bg-white p-6 shadow-soft">
         <div className="text-sm font-semibold tracking-[0.22em] text-accent-700 uppercase">
           Priority Stack
@@ -46,6 +71,21 @@ export default function AdminPage() {
           ))}
         </div>
       </div>
+    </div>
+  );
+}
+
+function Metric({
+  label,
+  value,
+}: Readonly<{
+  label: string;
+  value: string;
+}>) {
+  return (
+    <div className="rounded-2xl border border-ink-200 bg-[rgb(var(--surface))] p-4">
+      <div className="text-[11px] font-semibold tracking-[0.18em] text-ink-500 uppercase">{label}</div>
+      <div className="mt-1 text-2xl font-semibold text-ink-950">{value}</div>
     </div>
   );
 }

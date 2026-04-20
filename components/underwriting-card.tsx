@@ -1,10 +1,14 @@
 import { RiskLevelPill, UnderwritingStatusPill } from "@/components/underwriting-status-pill";
+import { BusinessUnderwritingFormFields } from "@/components/business-underwriting-form-fields";
 import type { BusinessUnderwritingRecord } from "@/lib/business-underwriting";
+import { updateUnderwritingRecord } from "@/lib/business-underwriting";
 
 export function UnderwritingCard({
   record,
+  editable = false,
 }: Readonly<{
   record: BusinessUnderwritingRecord;
+  editable?: boolean;
 }>) {
   return (
     <article className="rounded-[1.75rem] border border-ink-200 bg-white p-6 shadow-soft">
@@ -38,6 +42,17 @@ export function UnderwritingCard({
         <Mini label="Spread potential" value={record.spread_potential} />
         <Mini label="Next action" value={record.next_action} />
       </div>
+
+      {editable ? (
+        <details className="mt-5 rounded-[1.5rem] border border-dashed border-ink-200 bg-white/80 p-4">
+          <summary className="cursor-pointer text-sm font-semibold tracking-[0.16em] text-accent-700 uppercase">
+            Edit underwriting
+          </summary>
+          <form action={updateUnderwritingRecord} className="mt-5 grid gap-5">
+            <BusinessUnderwritingFormFields record={record} submitLabel="Save underwriting" />
+          </form>
+        </details>
+      ) : null}
     </article>
   );
 }
@@ -71,4 +86,3 @@ function Mini({
     </div>
   );
 }
-

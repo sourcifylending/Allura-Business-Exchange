@@ -12,8 +12,10 @@ export function SectionHeading({
       <div className="text-xs font-semibold tracking-[0.28em] text-accent-700 uppercase">
         {eyebrow}
       </div>
-      <h2 className="text-2xl font-semibold tracking-tight text-ink-950">{title}</h2>
-      <p className="max-w-3xl text-sm leading-6 text-ink-600">{description}</p>
+      <h2 className="text-2xl font-semibold tracking-tight text-ink-950 md:text-[2rem]">
+        {title}
+      </h2>
+      <p className="max-w-3xl text-base leading-7 text-ink-600">{description}</p>
     </div>
   );
 }

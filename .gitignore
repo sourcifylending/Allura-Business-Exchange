@@ -11,3 +11,5 @@ coverage
 !.env.example
 .DS_Store
 allura business exchange logos/
+
+.env*.local

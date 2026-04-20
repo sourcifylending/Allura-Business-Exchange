@@ -56,7 +56,7 @@ export function BusinessIntakeWorkflowBoard({
       </div>
       <div className="grid gap-4 xl:grid-cols-3">
         {records.map((record) => (
-          <BusinessIntakeCard key={record.id} record={record} />
+          <BusinessIntakeCard key={record.id} record={record} editable />
         ))}
       </div>
     </section>
@@ -102,4 +102,3 @@ function Board<T extends string>({
     </div>
   );
 }
-

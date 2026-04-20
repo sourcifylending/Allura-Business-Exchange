@@ -7,10 +7,12 @@ export function BuyerStageBoard({
   title,
   description,
   records,
+  editable = false,
 }: Readonly<{
   title: string;
   description: string;
   records: BuyerRecord[];
+  editable?: boolean;
 }>) {
   const grouped = records.reduce<Record<BuyerStage, BuyerRecord[]>>(
     (acc, buyer) => {
@@ -40,15 +42,20 @@ export function BuyerStageBoard({
                 {grouped[stage].length}
               </span>
             </div>
-            <div className="mt-4 grid gap-3">
-              {grouped[stage].map((buyer) => (
-                <BuyerCard key={buyer.id} buyer={buyer} />
-              ))}
-            </div>
+            {grouped[stage].length > 0 ? (
+              <div className="mt-4 grid gap-3">
+                {grouped[stage].map((buyer) => (
+                  <BuyerCard key={buyer.id} buyer={buyer} editable={editable} />
+                ))}
+              </div>
+            ) : (
+              <div className="mt-4 rounded-2xl border border-dashed border-ink-200 bg-white px-4 py-5 text-sm leading-6 text-ink-500">
+                No records in this stage yet.
+              </div>
+            )}
           </div>
         ))}
       </div>
     </section>
   );
 }
-

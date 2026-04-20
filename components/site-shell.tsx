@@ -1,19 +1,13 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { Logo } from "@/components/logo";
+import { getAppUrl } from "@/lib/app-url";
 import { publicNavItems } from "@/lib/navigation";
 
 function BrandMark() {
   return (
-    <div className="flex items-center gap-3">
-      <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-ink-200 bg-white shadow-sm">
-        <div className="h-4 w-4 rounded-full bg-accent-500" />
-      </div>
-      <div>
-        <div className="text-sm font-semibold tracking-[0.18em] text-ink-500 uppercase">
-          Allura
-        </div>
-        <div className="text-sm text-ink-600">Business Exchange</div>
-      </div>
+    <div className="relative h-11 w-[12.5rem] overflow-hidden">
+      <Logo variant="full" />
     </div>
   );
 }
@@ -23,36 +17,56 @@ export function SiteShell({
   eyebrow,
   title,
   description,
+  showPublicNav = true,
+  showSignInCta = true,
+  showHeroPanel = true,
 }: Readonly<{
   children: ReactNode;
   eyebrow?: string;
   title: string;
   description: string;
+  showPublicNav?: boolean;
+  showSignInCta?: boolean;
+  showHeroPanel?: boolean;
 }>) {
+  const appLoginHref = getAppUrl() ? new URL("/login", getAppUrl()).toString() : "/login";
+
   return (
     <div className="min-h-screen">
-      <header className="sticky top-0 z-30 border-b border-ink-200/80 bg-[rgba(247,244,239,0.88)] backdrop-blur-xl">
+      <header className="sticky top-0 z-30 border-b border-ink-200/70 bg-[rgba(10,11,13,0.8)] backdrop-blur-2xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-4 lg:px-8">
           <Link href="/" className="shrink-0">
             <BrandMark />
           </Link>
-          <nav className="hidden flex-wrap items-center gap-5 text-sm text-ink-600 md:flex">
-            {publicNavItems.map((item) => (
-              <Link key={item.href} href={item.href} className="transition hover:text-ink-950">
-                {item.label}
+          <div className="flex items-center gap-4">
+            {showPublicNav ? (
+              <nav className="hidden flex-wrap items-center gap-5 text-sm text-ink-500 md:flex">
+                {publicNavItems.map((item) => (
+                  <Link key={item.href} href={item.href} className="transition hover:text-ink-950">
+                    {item.label}
+                  </Link>
+                ))}
+              </nav>
+            ) : null}
+            {showSignInCta ? (
+              <Link
+                href={appLoginHref}
+                className="inline-flex items-center rounded-full border border-ink-200 bg-[rgb(var(--surface))] px-4 py-2 text-sm font-semibold text-ink-900 transition hover:border-accent-500 hover:text-accent-700"
+              >
+                Sign in
               </Link>
-            ))}
-          </nav>
-          <Link
-            href="/admin"
-            className="rounded-full border border-ink-300 bg-white px-4 py-2 text-sm font-medium text-ink-800 transition hover:border-accent-500 hover:text-accent-700"
-          >
-            Admin
-          </Link>
+            ) : null}
+          </div>
         </div>
       </header>
       <main className="mx-auto flex max-w-7xl flex-col gap-10 px-6 py-10 lg:px-8">
-        <section className="grid gap-8 rounded-[2rem] border border-ink-200 bg-white/80 p-8 shadow-soft lg:grid-cols-[1.1fr_0.9fr] lg:p-12">
+        <section
+          className={
+            showHeroPanel
+              ? "grid gap-8 rounded-[2rem] border border-ink-200 bg-[rgba(17,19,22,0.92)] p-8 shadow-soft lg:grid-cols-[1.1fr_0.9fr] lg:p-12"
+              : "grid gap-8 rounded-[2rem] border border-ink-200 bg-[rgba(17,19,22,0.92)] p-8 shadow-soft lg:p-12"
+          }
+        >
           <div className="max-w-2xl">
             {eyebrow ? (
               <p className="mb-4 text-xs font-semibold tracking-[0.28em] text-accent-700 uppercase">
@@ -66,18 +80,37 @@ export function SiteShell({
               {description}
             </p>
           </div>
-          <div className="grid gap-4 rounded-[1.75rem] border border-ink-200 bg-[rgb(var(--accent-soft))] p-6">
-            <div className="text-xs font-semibold tracking-[0.2em] text-accent-700 uppercase">
-              Product Focus
+          {showHeroPanel ? (
+            <div className="grid gap-5 rounded-[1.75rem] border border-ink-200 bg-[rgba(31,26,18,0.92)] p-6">
+              <div className="flex items-center gap-4">
+                <div className="flex h-20 w-14 items-center justify-center overflow-hidden rounded-full border border-ink-200 bg-[rgb(var(--surface-strong))] shadow-sm">
+                  <Logo variant="symbol" className="h-10 w-10 object-contain" />
+                </div>
+                <div>
+                  <div className="text-xs font-semibold tracking-[0.2em] text-accent-700 uppercase">
+                    Product Focus
+                  </div>
+                  <div className="text-lg font-medium text-ink-950">
+                    AI assets first. Business opportunities second.
+                  </div>
+                </div>
+              </div>
+              <div className="text-sm leading-6 text-ink-600">
+                A controlled exchange designed for speed from idea to sale, with clean packaging and
+                simple transfer workflows.
+              </div>
+              <div className="grid gap-3 sm:grid-cols-3">
+                {["Controlled intake", "Branded listings", "Simple transfers"].map((item) => (
+                  <div
+                    key={item}
+                    className="rounded-2xl border border-ink-200 bg-[rgb(var(--surface))] px-3 py-3 text-xs font-semibold tracking-[0.12em] text-ink-500 uppercase"
+                  >
+                    {item}
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="text-lg font-medium text-ink-950">
-              AI assets first. Business opportunities second.
-            </div>
-            <div className="text-sm leading-6 text-ink-600">
-              A controlled exchange designed for speed from idea to sale, with clean packaging and
-              simple transfer workflows.
-            </div>
-          </div>
+          ) : null}
         </section>
         {children}
       </main>

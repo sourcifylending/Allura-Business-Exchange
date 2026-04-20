@@ -1,9 +1,9 @@
 import type { OpportunityRecord } from "@/lib/opportunities";
 
 const statusStyles: Record<OpportunityRecord["status"], string> = {
-  live: "bg-accent-100 text-accent-800 border-accent-200",
-  coming_soon: "bg-ink-100 text-ink-700 border-ink-200",
-  private_review: "bg-ink-100 text-ink-700 border-ink-200",
+  live: "bg-[rgba(212,172,92,0.14)] text-accent-700 border-accent-200",
+  coming_soon: "bg-[rgb(var(--surface))] text-ink-500 border-ink-200",
+  private_review: "bg-[rgb(var(--surface))] text-ink-500 border-ink-200",
 };
 
 export function OpportunityCard({
@@ -17,14 +17,14 @@ export function OpportunityCard({
   return (
     <article
       className={[
-        "overflow-hidden rounded-[1.75rem] border bg-white shadow-soft",
+        "overflow-hidden rounded-[1.75rem] border bg-[rgb(var(--surface-strong))] shadow-soft transition duration-200 hover:-translate-y-0.5 hover:shadow-lg",
         isAiAsset ? "border-accent-200" : "border-ink-200",
       ].join(" ")}
     >
       <div
         className={[
           "flex items-center justify-between gap-3 px-5 py-4",
-          isAiAsset ? "bg-[rgb(var(--accent-soft))]" : "bg-ink-50",
+          isAiAsset ? "bg-[rgba(31,26,18,0.96)]" : "bg-[rgb(var(--surface))]",
         ].join(" ")}
       >
         <div>
@@ -43,17 +43,29 @@ export function OpportunityCard({
         </span>
       </div>
       <div className="grid gap-5 p-5">
-        <div className="flex min-h-[120px] items-end rounded-[1.4rem] border border-ink-200 bg-gradient-to-br from-white to-ink-50 p-4">
-          <div>
+        <div className="flex min-h-[120px] flex-col justify-between rounded-[1.4rem] border border-ink-200 bg-gradient-to-br from-[rgb(var(--surface-strong))] via-[rgb(var(--surface))] to-[rgba(31,26,18,0.96)] p-4">
+          <div className="flex items-center justify-between gap-3">
             <div className="text-[11px] font-semibold tracking-[0.24em] text-ink-500 uppercase">
               {opportunity.cover_image}
             </div>
-            <div className="mt-2 text-sm text-ink-500">{opportunity.region}</div>
+            <div className="rounded-full border border-ink-200 bg-[rgb(var(--surface))] px-3 py-1 text-[11px] font-semibold tracking-[0.18em] text-ink-500 uppercase">
+              {opportunity.region}
+            </div>
+          </div>
+          <div className="mt-5 grid gap-2">
+            <div className="text-xs font-semibold tracking-[0.2em] text-accent-700 uppercase">
+              {opportunity.listing_type === "ai_asset" ? "Primary product lane" : "Secondary business lane"}
+            </div>
+            <div className="text-sm leading-6 text-ink-600">
+              {opportunity.listing_type === "ai_asset"
+                ? "Branded digital product shown openly with price and positioning."
+                : "Sanitized operating business presented as a controlled teaser."}
+            </div>
           </div>
         </div>
         <div>
-          <div className="text-lg font-semibold text-ink-950">
-            {isAiAsset ? opportunity.title_public : opportunity.title_public}
+          <div className="text-lg font-semibold tracking-tight text-ink-950">
+            {opportunity.title_public}
           </div>
           {isAiAsset ? (
             <div className="mt-1 text-sm font-medium text-accent-800">
@@ -65,14 +77,16 @@ export function OpportunityCard({
           <p className="mt-3 text-sm leading-6 text-ink-600">{opportunity.short_description}</p>
         </div>
         <div className="grid gap-3 sm:grid-cols-2">
-          <div className="rounded-2xl border border-ink-200 bg-ink-50 p-4">
+          <div className="rounded-2xl border border-ink-200 bg-[rgb(var(--surface))] p-4">
             <div className="text-[11px] font-semibold tracking-[0.18em] text-ink-500 uppercase">
               Asking Price
             </div>
-            <div className="mt-2 text-xl font-semibold text-ink-950">{opportunity.asking_price}</div>
+            <div className="mt-2 text-xl font-semibold tracking-tight text-ink-950">
+              {opportunity.asking_price}
+            </div>
             <div className="mt-1 text-sm text-ink-600">{opportunity.price_range}</div>
           </div>
-          <div className="rounded-2xl border border-ink-200 bg-ink-50 p-4">
+          <div className="rounded-2xl border border-ink-200 bg-[rgb(var(--surface))] p-4">
             <div className="text-[11px] font-semibold tracking-[0.18em] text-ink-500 uppercase">
               Visibility
             </div>
@@ -84,7 +98,7 @@ export function OpportunityCard({
             </div>
           </div>
         </div>
-        <div className="rounded-2xl border border-dashed border-ink-200 bg-white px-4 py-3 text-sm text-ink-600">
+        <div className="rounded-2xl border border-dashed border-ink-200 bg-[rgb(var(--surface))] px-4 py-3 text-sm text-ink-600">
           {isAiAsset
             ? "Branded AI asset listing with public details shown directly."
             : "Business identity remains sanitized until approval or NDA unlocks deeper access."}

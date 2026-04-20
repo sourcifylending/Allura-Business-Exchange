@@ -9,8 +9,8 @@ export function RadarIntakeCard() {
       <div className="mt-2 text-2xl font-semibold text-ink-950">Capture, score, and decide fast</div>
       <p className="mt-2 max-w-3xl text-sm leading-6 text-ink-600">
         This shell is designed for internal idea capture and fast triage before anything moves into
-        a build queue. It stays static in Phase 4 and becomes the foundation for later research
-        assistance.
+        a build queue. It now reads from Supabase-backed market radar records and stays clean when
+        no rows exist yet.
       </p>
 
       <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
@@ -22,4 +22,3 @@ export function RadarIntakeCard() {
     </section>
   );
 }
-

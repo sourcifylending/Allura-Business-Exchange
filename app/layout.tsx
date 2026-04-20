@@ -4,7 +4,10 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Allura Business Exchange",
-  description: "Private exchange for AI assets and selected business opportunities.",
+  description: "Premium private exchange for AI assets and controlled business opportunities.",
+  icons: {
+    icon: "/icon.png",
+  },
 };
 
 export default function RootLayout({

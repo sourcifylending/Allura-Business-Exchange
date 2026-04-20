@@ -1,12 +1,21 @@
 import type { ReactNode } from "react";
-import type { AssetRegistryRecord, AssetStage } from "@/lib/asset-registry";
-import { assetStageLabels } from "@/lib/asset-registry";
+import { AssetRegistryFormFields } from "@/components/asset-registry-form-fields";
+import type { AssetRegistryRecord } from "@/lib/asset-registry";
+import { assetStageLabels, updateAssetRegistryRecord } from "@/lib/asset-registry";
 
 export function AssetRegistryTable({
   records,
 }: Readonly<{
   records: AssetRegistryRecord[];
 }>) {
+  if (records.length === 0) {
+    return (
+      <div className="rounded-[1.75rem] border border-dashed border-ink-200 bg-ink-50 px-5 py-6 text-sm leading-6 text-ink-600">
+        No asset registry rows have been loaded yet. Add records in Supabase to populate this view.
+      </div>
+    );
+  }
+
   return (
     <div className="overflow-hidden rounded-[1.75rem] border border-ink-200 bg-white shadow-soft">
       <table className="w-full border-collapse">
@@ -17,6 +26,7 @@ export function AssetRegistryTable({
             <Th>Paths</Th>
             <Th>Readiness</Th>
             <Th>Notes</Th>
+            <Th>Actions</Th>
           </tr>
         </thead>
         <tbody>
@@ -30,7 +40,7 @@ export function AssetRegistryTable({
                 </div>
               </Td>
               <Td>
-                <Badge>{assetStageLabels[record.current_stage as AssetStage]}</Badge>
+                <Badge>{assetStageLabels[record.current_stage]}</Badge>
                 <div className="mt-2 text-sm text-ink-600">{record.target_buyer_type}</div>
               </Td>
               <Td>
@@ -45,6 +55,16 @@ export function AssetRegistryTable({
               </Td>
               <Td>
                 <div className="text-sm leading-6 text-ink-600">{record.notes}</div>
+              </Td>
+              <Td>
+                <details className="rounded-2xl border border-dashed border-ink-200 bg-ink-50 p-3">
+                  <summary className="cursor-pointer text-xs font-semibold tracking-[0.18em] text-accent-700 uppercase">
+                    Edit asset
+                  </summary>
+                  <form action={updateAssetRegistryRecord} className="mt-4 grid gap-4">
+                    <AssetRegistryFormFields record={record} submitLabel="Save asset" />
+                  </form>
+                </details>
               </Td>
             </tr>
           ))}
