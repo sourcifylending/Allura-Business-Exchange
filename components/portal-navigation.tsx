@@ -63,7 +63,7 @@ export function PortalNavigation({
                 className={[
                   "block rounded-2xl border px-4 py-3 text-sm font-medium transition",
                   active
-                    ? "border-accent-200 bg-[rgba(31,26,18,0.96)] text-accent-700"
+                    ? "border-accent-200 bg-[rgba(160, 120, 50, 0.96)] text-accent-700"
                     : "border-transparent text-ink-500 hover:border-ink-200 hover:bg-[rgb(var(--surface))] hover:text-ink-950",
                 ].join(" ")}
               >

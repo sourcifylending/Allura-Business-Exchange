@@ -43,7 +43,7 @@ export function SellerOfferActivityCard({
       <div className="flex flex-wrap items-center gap-3">
         <Link
           href={`/portal/seller/offers/${record.id}`}
-          className="rounded-full border border-accent-200 bg-[rgba(31,26,18,0.96)] px-4 py-2 text-sm font-semibold text-accent-700 transition hover:border-accent-300 hover:text-accent-600"
+          className="rounded-full border border-accent-200 bg-[rgba(160, 120, 50, 0.96)] px-4 py-2 text-sm font-semibold text-accent-700 transition hover:border-accent-300 hover:text-accent-600"
         >
           Open detail
         </Link>

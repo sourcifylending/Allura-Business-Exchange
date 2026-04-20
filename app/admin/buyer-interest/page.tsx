@@ -48,7 +48,7 @@ export default async function BuyerInterestPage({ searchParams }: BuyerInterestP
               className={[
                 "rounded-full border px-4 py-2 text-sm font-semibold transition",
                 type === option.value
-                  ? "border-accent-200 bg-[rgba(31,26,18,0.96)] text-accent-700"
+                  ? "border-accent-200 bg-[rgba(160, 120, 50, 0.96)] text-accent-700"
                   : "border-ink-200 bg-[rgb(var(--surface))] text-ink-700 hover:border-accent-300 hover:text-accent-700",
               ].join(" ")}
             >

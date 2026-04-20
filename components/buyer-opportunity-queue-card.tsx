@@ -50,7 +50,7 @@ export function BuyerOpportunityQueueCard({
         </Link>
         <Link
           href={`/portal/buyer/opportunities/${record.asset_packaging_id}`}
-          className="rounded-full border border-accent-200 bg-[rgba(31,26,18,0.96)] px-4 py-2 text-sm font-semibold text-accent-700 transition hover:border-accent-300 hover:text-accent-600"
+          className="rounded-full border border-accent-200 bg-[rgba(160, 120, 50, 0.96)] px-4 py-2 text-sm font-semibold text-accent-700 transition hover:border-accent-300 hover:text-accent-600"
         >
           Open opportunity
         </Link>

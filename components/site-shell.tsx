@@ -81,7 +81,7 @@ export function SiteShell({
             </p>
           </div>
           {showHeroPanel ? (
-            <div className="grid gap-5 rounded-[1.75rem] border border-ink-200 bg-[rgba(31,26,18,0.92)] p-6">
+            <div className="grid gap-5 rounded-[1.75rem] border border-ink-200 bg-[rgba(160,120,50,0.12)] p-6">
               <div className="flex items-center gap-4">
                 <div className="flex h-20 w-14 items-center justify-center overflow-hidden rounded-full border border-ink-200 bg-[rgb(var(--surface-strong))] shadow-sm">
                   <Logo variant="symbol" className="h-10 w-10 object-contain" />

@@ -25,7 +25,7 @@ export function CloseoutArchiveForm({
       <div className="flex flex-wrap items-center gap-3">
         <button
           type="submit"
-          className="inline-flex items-center justify-center rounded-full border border-accent-200 bg-[rgba(31,26,18,0.96)] px-5 py-3 text-sm font-semibold text-accent-700 transition hover:border-accent-300 hover:text-accent-600"
+          className="inline-flex items-center justify-center rounded-full border border-accent-200 bg-[rgba(160, 120, 50, 0.96)] px-5 py-3 text-sm font-semibold text-accent-700 transition hover:border-accent-300 hover:text-accent-600"
         >
           Archive completed deal
         </button>

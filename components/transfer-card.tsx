@@ -27,7 +27,7 @@ export function TransferCard({
           {detailHref ? (
             <Link
               href={detailHref}
-              className="rounded-full border border-accent-200 bg-[rgba(31,26,18,0.96)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-accent-700 transition hover:border-accent-300 hover:text-accent-600"
+              className="rounded-full border border-accent-200 bg-[rgba(160, 120, 50, 0.96)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-accent-700 transition hover:border-accent-300 hover:text-accent-600"
             >
               Open detail
             </Link>

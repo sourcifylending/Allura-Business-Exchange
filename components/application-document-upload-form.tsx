@@ -58,7 +58,7 @@ export function ApplicationDocumentUploadForm({
               name="file"
               required
               accept={accept}
-              className="rounded-2xl border border-ink-200 bg-[rgb(var(--surface))] px-4 py-3 text-sm text-ink-700 outline-none transition file:mr-4 file:rounded-full file:border-0 file:bg-[rgba(31,26,18,0.96)] file:px-4 file:py-2 file:text-sm file:font-semibold file:text-accent-700 hover:border-accent-300 focus:border-accent-400"
+              className="rounded-2xl border border-ink-200 bg-[rgb(var(--surface))] px-4 py-3 text-sm text-ink-700 outline-none transition file:mr-4 file:rounded-full file:border-0 file:bg-[rgba(160, 120, 50, 0.96)] file:px-4 file:py-2 file:text-sm file:font-semibold file:text-accent-700 hover:border-accent-300 focus:border-accent-400"
             />
           </label>
         </div>
@@ -66,7 +66,7 @@ export function ApplicationDocumentUploadForm({
         <div className="flex flex-wrap items-center gap-3">
           <button
             type="submit"
-            className="rounded-full border border-accent-200 bg-[rgba(31,26,18,0.96)] px-5 py-2.5 text-sm font-semibold text-accent-700 transition hover:border-accent-300 hover:text-accent-600"
+            className="rounded-full border border-accent-200 bg-[rgba(160, 120, 50, 0.96)] px-5 py-2.5 text-sm font-semibold text-accent-700 transition hover:border-accent-300 hover:text-accent-600"
           >
             {buttonLabel}
           </button>

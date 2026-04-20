@@ -19,7 +19,7 @@ export function BuyerOpportunityActions({
             "w-full rounded-2xl border px-4 py-3 text-sm font-semibold transition",
             interested
               ? "border-emerald-200 bg-[rgba(12,35,22,0.96)] text-emerald-700"
-              : "border-accent-200 bg-[rgba(31,26,18,0.96)] text-accent-700 hover:border-accent-300 hover:text-accent-600",
+              : "border-accent-200 bg-[rgba(160, 120, 50, 0.96)] text-accent-700 hover:border-accent-300 hover:text-accent-600",
           ].join(" ")}
         >
           {interested ? "Interest recorded" : "Express interest"}

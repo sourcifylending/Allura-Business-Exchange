@@ -90,7 +90,7 @@ export default async function BuyerRequestDetailPage({ params, searchParams }: B
                 <input type="hidden" name="id" value={request.id} />
                 <button
                   type="submit"
-                  className="rounded-full border border-accent-200 bg-[rgba(31,26,18,0.96)] px-5 py-2.5 text-sm font-semibold text-accent-700 transition hover:border-accent-300 hover:text-accent-600"
+                  className="rounded-full border border-accent-200 bg-[rgba(160, 120, 50, 0.96)] px-5 py-2.5 text-sm font-semibold text-accent-700 transition hover:border-accent-300 hover:text-accent-600"
                 >
                   Acknowledge request
                 </button>

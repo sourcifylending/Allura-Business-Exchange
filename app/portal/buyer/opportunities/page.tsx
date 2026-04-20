@@ -47,7 +47,7 @@ export default async function BuyerOpportunitiesPage({ searchParams }: BuyerOppo
       status={record.status}
     >
       {searchParams?.saved ? (
-        <div className="rounded-[1.5rem] border border-accent-200 bg-[rgba(31,26,18,0.96)] px-5 py-4 text-sm font-medium text-accent-800">
+        <div className="rounded-[1.5rem] border border-accent-200 bg-[rgba(160, 120, 50, 0.96)] px-5 py-4 text-sm font-medium text-accent-800">
           {searchParams.saved === "interest"
             ? "Interest recorded successfully."
             : "Opportunity saved to your watchlist."}
@@ -109,7 +109,7 @@ export default async function BuyerOpportunitiesPage({ searchParams }: BuyerOppo
                     <div className="mt-2 text-sm leading-6 text-ink-600">{opportunity.portal_summary}</div>
                     <Link
                       href={`/portal/buyer/opportunities/${opportunity.id}`}
-                      className="mt-4 inline-flex items-center justify-center rounded-full border border-accent-200 bg-[rgba(31,26,18,0.96)] px-4 py-2 text-sm font-semibold text-accent-700 transition hover:border-accent-300 hover:text-accent-600"
+                      className="mt-4 inline-flex items-center justify-center rounded-full border border-accent-200 bg-[rgba(160, 120, 50, 0.96)] px-4 py-2 text-sm font-semibold text-accent-700 transition hover:border-accent-300 hover:text-accent-600"
                     >
                       Review opportunity
                     </Link>

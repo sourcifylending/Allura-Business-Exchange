@@ -19,7 +19,7 @@ export default function BuyerApplyPage({ searchParams }: BuyerApplyPageProps) {
       description="Buyer access is approval-first. Submit an application, then wait for internal review and invitation."
     >
       {searchParams?.submitted ? (
-        <div className="rounded-[1.5rem] border border-accent-200 bg-[rgba(31,26,18,0.96)] px-5 py-4 text-sm font-medium text-accent-700 shadow-soft">
+        <div className="rounded-[1.5rem] border border-accent-200 bg-[rgba(160, 120, 50, 0.96)] px-5 py-4 text-sm font-medium text-accent-700 shadow-soft">
           Application submitted. Our team will review it before any access is granted.
         </div>
       ) : null}

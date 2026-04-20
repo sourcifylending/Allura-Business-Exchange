@@ -9,7 +9,7 @@ export function RadarScorePill({
 }>) {
   const toneClasses: Record<typeof tone, string> = {
     neutral: "border-ink-200 bg-[rgb(var(--surface))] text-ink-500",
-    positive: "border-accent-200 bg-[rgba(31,26,18,0.96)] text-accent-700",
+    positive: "border-accent-200 bg-[rgba(160, 120, 50, 0.96)] text-accent-700",
     warning: "border-amber-200 bg-[rgba(52,40,18,0.96)] text-amber-700",
     danger: "border-rose-200 bg-[rgba(52,18,26,0.96)] text-rose-700",
   };

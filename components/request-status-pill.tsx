@@ -13,7 +13,7 @@ function requestTone(record: PortalRequestSummaryRecord) {
       return "border-rose-200 bg-[rgba(52,18,26,0.96)] text-rose-700";
     case "acknowledged":
     case "in_progress":
-      return "border-accent-200 bg-[rgba(31,26,18,0.96)] text-accent-700";
+      return "border-accent-200 bg-[rgba(160, 120, 50, 0.96)] text-accent-700";
     case "open":
     default:
       return "border-ink-200 bg-[rgb(var(--surface))] text-ink-700";

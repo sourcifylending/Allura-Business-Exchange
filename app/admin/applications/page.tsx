@@ -52,7 +52,7 @@ export default async function ApplicationsReviewPage() {
           </div>
           <Link
             href="/admin/applications/documents"
-            className="rounded-full border border-accent-200 bg-[rgba(31,26,18,0.96)] px-4 py-2 text-sm font-semibold text-accent-700 transition hover:border-accent-300 hover:text-accent-600"
+            className="rounded-full border border-accent-200 bg-[rgba(160, 120, 50, 0.96)] px-4 py-2 text-sm font-semibold text-accent-700 transition hover:border-accent-300 hover:text-accent-600"
           >
             Open document queue
           </Link>
@@ -69,7 +69,7 @@ export default async function ApplicationsReviewPage() {
           </div>
           <Link
             href="/admin/buyer-interest"
-            className="rounded-full border border-accent-200 bg-[rgba(31,26,18,0.96)] px-4 py-2 text-sm font-semibold text-accent-700 transition hover:border-accent-300 hover:text-accent-600"
+            className="rounded-full border border-accent-200 bg-[rgba(160, 120, 50, 0.96)] px-4 py-2 text-sm font-semibold text-accent-700 transition hover:border-accent-300 hover:text-accent-600"
           >
             Open buyer interest queue
           </Link>
@@ -86,7 +86,7 @@ export default async function ApplicationsReviewPage() {
           </div>
           <Link
             href="/admin/buyer-offers"
-            className="rounded-full border border-accent-200 bg-[rgba(31,26,18,0.96)] px-4 py-2 text-sm font-semibold text-accent-700 transition hover:border-accent-300 hover:text-accent-600"
+            className="rounded-full border border-accent-200 bg-[rgba(160, 120, 50, 0.96)] px-4 py-2 text-sm font-semibold text-accent-700 transition hover:border-accent-300 hover:text-accent-600"
           >
             Open buyer offers queue
           </Link>
@@ -159,7 +159,7 @@ function QueueCard({
         </div>
         <Link
           href={href}
-          className="rounded-full border border-accent-200 bg-[rgba(31,26,18,0.96)] px-4 py-2 text-sm font-semibold text-accent-700 transition hover:border-accent-300 hover:text-accent-600"
+          className="rounded-full border border-accent-200 bg-[rgba(160, 120, 50, 0.96)] px-4 py-2 text-sm font-semibold text-accent-700 transition hover:border-accent-300 hover:text-accent-600"
         >
           Open queue
         </Link>

@@ -198,7 +198,7 @@ export default async function SellerPortalPage({ searchParams }: SellerPortalPag
               </div>
               <Link
                 href="/portal/seller/offers"
-                className="mt-4 inline-flex items-center justify-center rounded-full border border-accent-200 bg-[rgba(31,26,18,0.96)] px-4 py-2 text-sm font-semibold text-accent-700 transition hover:border-accent-300 hover:text-accent-600"
+                className="mt-4 inline-flex items-center justify-center rounded-full border border-accent-200 bg-[rgba(160, 120, 50, 0.96)] px-4 py-2 text-sm font-semibold text-accent-700 transition hover:border-accent-300 hover:text-accent-600"
               >
                 Open offer activity
               </Link>
@@ -231,7 +231,7 @@ export default async function SellerPortalPage({ searchParams }: SellerPortalPag
                         <div className="mt-1">Next step: {contract.safe_next_step}</div>
                         <Link
                           href={`/portal/seller/contracts/${contract.id}`}
-                          className="mt-3 inline-flex items-center justify-center rounded-full border border-accent-200 bg-[rgba(31,26,18,0.96)] px-4 py-2 text-sm font-semibold text-accent-700 transition hover:border-accent-300 hover:text-accent-600"
+                          className="mt-3 inline-flex items-center justify-center rounded-full border border-accent-200 bg-[rgba(160, 120, 50, 0.96)] px-4 py-2 text-sm font-semibold text-accent-700 transition hover:border-accent-300 hover:text-accent-600"
                         >
                           Open contract
                         </Link>

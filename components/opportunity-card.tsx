@@ -24,7 +24,7 @@ export function OpportunityCard({
       <div
         className={[
           "flex items-center justify-between gap-3 px-5 py-4",
-          isAiAsset ? "bg-[rgba(31,26,18,0.96)]" : "bg-[rgb(var(--surface))]",
+          isAiAsset ? "bg-[rgba(160, 120, 50, 0.96)]" : "bg-[rgb(var(--surface))]",
         ].join(" ")}
       >
         <div>
@@ -43,7 +43,7 @@ export function OpportunityCard({
         </span>
       </div>
       <div className="grid gap-5 p-5">
-        <div className="flex min-h-[120px] flex-col justify-between rounded-[1.4rem] border border-ink-200 bg-gradient-to-br from-[rgb(var(--surface-strong))] via-[rgb(var(--surface))] to-[rgba(31,26,18,0.96)] p-4">
+        <div className="flex min-h-[120px] flex-col justify-between rounded-[1.4rem] border border-ink-200 bg-gradient-to-br from-[rgb(var(--surface-strong))] via-[rgb(var(--surface))] to-[rgba(160, 120, 50, 0.96)] p-4">
           <div className="flex items-center justify-between gap-3">
             <div className="text-[11px] font-semibold tracking-[0.24em] text-ink-500 uppercase">
               {opportunity.cover_image}

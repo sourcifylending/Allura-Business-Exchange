@@ -58,7 +58,7 @@ export default async function SellerTransferDetailPage({ params }: SellerTransfe
                 <span className="rounded-full border border-ink-200 bg-[rgb(var(--surface))] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-ink-700">
                   {portalTransferStatusLabel(transfer)}
                 </span>
-                <span className="rounded-full border border-accent-200 bg-[rgba(31,26,18,0.96)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-accent-700">
+                <span className="rounded-full border border-accent-200 bg-[rgba(160, 120, 50, 0.96)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-accent-700">
                   {portalTransferNextStepLabel(transfer)}
                 </span>
               </div>
@@ -91,7 +91,7 @@ export default async function SellerTransferDetailPage({ params }: SellerTransfe
               {transfer.contract_id ? (
                 <Link
                   href={`/portal/seller/contracts/${transfer.contract_id}`}
-                  className="rounded-full border border-accent-200 bg-[rgba(31,26,18,0.96)] px-4 py-2 text-sm font-semibold text-accent-700 transition hover:border-accent-300 hover:text-accent-600"
+                  className="rounded-full border border-accent-200 bg-[rgba(160, 120, 50, 0.96)] px-4 py-2 text-sm font-semibold text-accent-700 transition hover:border-accent-300 hover:text-accent-600"
                 >
                   Open contract
                 </Link>

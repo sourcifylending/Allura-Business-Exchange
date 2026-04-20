@@ -66,7 +66,7 @@ export default async function BuyerOpportunityDetailPage({
         </div>
       ) : null}
       {searchParams?.saved ? (
-        <div className="rounded-[1.5rem] border border-accent-200 bg-[rgba(31,26,18,0.96)] px-5 py-4 text-sm font-medium text-accent-800">
+        <div className="rounded-[1.5rem] border border-accent-200 bg-[rgba(160, 120, 50, 0.96)] px-5 py-4 text-sm font-medium text-accent-800">
           {searchParams.saved === "interest"
             ? "Interest recorded successfully."
             : "Opportunity saved to your watchlist."}
@@ -130,7 +130,7 @@ export default async function BuyerOpportunityDetailPage({
                 </div>
                 <Link
                   href={`/portal/buyer/offers/${submission.id}`}
-                  className="inline-flex items-center justify-center rounded-full border border-accent-200 bg-[rgba(31,26,18,0.96)] px-4 py-2 text-sm font-semibold text-accent-700 transition hover:border-accent-300 hover:text-accent-600"
+                  className="inline-flex items-center justify-center rounded-full border border-accent-200 bg-[rgba(160, 120, 50, 0.96)] px-4 py-2 text-sm font-semibold text-accent-700 transition hover:border-accent-300 hover:text-accent-600"
                 >
                   Open offer detail
                 </Link>
