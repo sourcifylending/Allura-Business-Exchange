@@ -8,7 +8,7 @@ export async function POST(request: Request) {
     password?: string;
   };
 
-  const configuredPassword = "testpass123";
+  const configuredPassword = process.env.ADMIN_AUTH_PASSWORD;
 
   if (!email || !password || !configuredPassword || !isAdminEmail(email) || password !== configuredPassword) {
     return NextResponse.json({ error: "Invalid admin credentials." }, { status: 401 });
