@@ -34,7 +34,7 @@ export function SiteShell({
   return (
     <div className="min-h-screen">
       <header className="sticky top-0 z-30 border-b border-ink-200/70 bg-[rgba(10,11,13,0.8)] backdrop-blur-2xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-4 lg:px-8">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:gap-6 sm:px-6 sm:py-4 lg:px-8">
           <Link href="/" className="shrink-0">
             <BrandMark />
           </Link>
@@ -59,51 +59,51 @@ export function SiteShell({
           </div>
         </div>
       </header>
-      <main className="mx-auto flex max-w-7xl flex-col gap-10 px-6 py-10 lg:px-8">
+      <main className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-6 sm:gap-8 sm:px-6 sm:py-10 lg:px-8">
         <section
           className={
             showHeroPanel
-              ? "grid gap-8 rounded-[2rem] border border-ink-200 bg-[rgba(17,19,22,0.92)] p-8 shadow-soft lg:grid-cols-[1.1fr_0.9fr] lg:p-12"
-              : "grid gap-8 rounded-[2rem] border border-ink-200 bg-[rgba(17,19,22,0.92)] p-8 shadow-soft lg:p-12"
+              ? "grid gap-6 rounded-[1.5rem] border border-ink-200 bg-[rgba(17,19,22,0.92)] p-4 shadow-soft sm:gap-8 sm:p-8 lg:grid-cols-[1.1fr_0.9fr] lg:p-12 lg:rounded-[2rem]"
+              : "grid gap-6 rounded-[1.5rem] border border-ink-200 bg-[rgba(17,19,22,0.92)] p-4 shadow-soft sm:gap-8 sm:p-8 lg:p-12 lg:rounded-[2rem]"
           }
         >
           <div className="max-w-2xl">
             {eyebrow ? (
-              <p className="mb-4 text-xs font-semibold tracking-[0.28em] text-accent-700 uppercase">
+              <p className="mb-3 text-xs font-semibold tracking-[0.28em] text-accent-700 uppercase">
                 {eyebrow}
               </p>
             ) : null}
-            <h1 className="text-4xl font-semibold tracking-tight text-ink-950 md:text-5xl">
+            <h1 className="text-3xl font-semibold tracking-tight text-ink-950 sm:text-4xl md:text-5xl">
               {title}
             </h1>
-            <p className="mt-4 max-w-xl text-base leading-7 text-ink-600 md:text-lg">
+            <p className="mt-3 max-w-xl text-sm leading-6 text-ink-600 sm:mt-4 sm:text-base sm:leading-7 md:text-lg">
               {description}
             </p>
           </div>
           {showHeroPanel ? (
-            <div className="grid gap-5 rounded-[1.75rem] border border-ink-200 bg-[rgba(160,120,50,0.12)] p-6">
-              <div className="flex items-center gap-4">
-                <div className="flex h-20 w-14 items-center justify-center overflow-hidden rounded-full border border-ink-200 bg-[rgb(var(--surface-strong))] shadow-sm">
-                  <Logo variant="symbol" className="h-10 w-10 object-contain" />
+            <div className="grid gap-4 rounded-[1.25rem] border border-ink-200 bg-[rgba(160,120,50,0.12)] p-4 sm:gap-5 sm:p-6 lg:rounded-[1.75rem]">
+              <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:gap-4">
+                <div className="flex h-16 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full border border-ink-200 bg-[rgb(var(--surface-strong))] shadow-sm sm:h-20 sm:w-14">
+                  <Logo variant="symbol" className="h-8 w-8 object-contain sm:h-10 sm:w-10" />
                 </div>
                 <div>
                   <div className="text-xs font-semibold tracking-[0.2em] text-accent-700 uppercase">
                     Product Focus
                   </div>
-                  <div className="text-lg font-medium text-ink-950">
+                  <div className="mt-1 text-base font-medium text-ink-950 sm:text-lg">
                     AI assets first. Business opportunities second.
                   </div>
                 </div>
               </div>
-              <div className="text-sm leading-6 text-ink-600">
+              <div className="text-xs leading-5 text-ink-600 sm:text-sm sm:leading-6">
                 A controlled exchange designed for speed from idea to sale, with clean packaging and
                 simple transfer workflows.
               </div>
-              <div className="grid gap-3 sm:grid-cols-3">
+              <div className="grid gap-2 grid-cols-1 sm:grid-cols-3 sm:gap-3">
                 {["Controlled intake", "Branded listings", "Simple transfers"].map((item) => (
                   <div
                     key={item}
-                    className="rounded-2xl border border-ink-200 bg-[rgb(var(--surface))] px-3 py-3 text-xs font-semibold tracking-[0.12em] text-ink-500 uppercase"
+                    className="rounded-xl border border-ink-200 bg-[rgb(var(--surface))] px-3 py-2 text-xs font-semibold tracking-[0.12em] text-ink-500 uppercase sm:rounded-2xl sm:py-3"
                   >
                     {item}
                   </div>
