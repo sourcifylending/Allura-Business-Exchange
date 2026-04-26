@@ -93,9 +93,15 @@ export const opportunities: OpportunityRecord[] = [
 ];
 
 export const aiAssetOpportunities = opportunities.filter(
-  (opportunity) => opportunity.listing_type === "ai_asset" && opportunity.published,
+  (opportunity) =>
+    opportunity.listing_type === "ai_asset" &&
+    opportunity.published &&
+    opportunity.visibility_mode === "fully_public",
 );
 
 export const businessTeaserOpportunities = opportunities.filter(
-  (opportunity) => opportunity.listing_type === "business" && opportunity.published,
+  (opportunity) =>
+    opportunity.listing_type === "business" &&
+    opportunity.published &&
+    opportunity.visibility_mode === "fully_public",
 );

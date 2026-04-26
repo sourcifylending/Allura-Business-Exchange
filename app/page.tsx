@@ -54,12 +54,22 @@ export default function HomePage() {
         </PageCard>
       </div>
 
-      <OpportunityGrid
-        eyebrow="Featured Listings"
-        title="Selected AI assets for sale"
-        description="A direct preview of the primary lane, with clear pricing and branded positioning."
-        opportunities={aiAssetOpportunities}
-      />
+      {aiAssetOpportunities.length > 0 ? (
+        <OpportunityGrid
+          eyebrow="Featured Listings"
+          title="Selected AI assets for sale"
+          description="A direct preview of the primary lane, with clear pricing and branded positioning."
+          opportunities={aiAssetOpportunities}
+        />
+      ) : (
+        <section className="rounded-[2rem] border border-ink-200 bg-[rgba(17,19,22,0.92)] p-8 text-center lg:p-12">
+          <div className="text-xs font-semibold tracking-[0.28em] text-ink-500 uppercase">Featured Listings</div>
+          <h2 className="mt-4 text-2xl font-semibold text-ink-900">No listings currently available</h2>
+          <p className="mx-auto mt-3 max-w-lg text-base leading-7 text-ink-600">
+            Current opportunities are shared with qualified buyers after review. Apply below to get access to our curated deal flow.
+          </p>
+        </section>
+      )}
 
       <div className="grid gap-6 lg:grid-cols-[1fr_1fr]">
         <PageCard

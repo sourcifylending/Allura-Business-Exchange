@@ -8,49 +8,29 @@ export const publicNavItems = [
   { href: "/contact", label: "Contact" },
 ];
 
-export const adminNavItems = [
+export type AdminNavItem = Readonly<{
+  href?: string;
+  label: string;
+  subitems?: AdminNavItem[];
+}>;
+
+export const adminNavItems: AdminNavItem[] = [
   { href: "/admin", label: "Dashboard" },
-  { href: "/admin/digital-assets", label: "Digital Assets" },
-  { href: "/admin/applications", label: "Applications Review" },
-  { href: "/admin/market-radar", label: "Market Radar" },
-  { href: "/admin/asset-drafts", label: "AI Asset Drafts" },
-  { href: "/admin/build-pipeline", label: "AI Asset Build Pipeline" },
-  { href: "/admin/packaging", label: "Packaging Center" },
-  { href: "/admin/listings", label: "AI Asset Listings" },
-  { href: "/admin/opportunities", label: "Buyer Discovery" },
-  { href: "/admin/buyer-interest", label: "Buyer Interest" },
-  { href: "/admin/investor-leads", label: "Investor Leads" },
-  { href: "/admin/business-submissions", label: "Business Intake" },
-  { href: "/admin/underwriting", label: "Underwriting" },
+  {
+    label: "CRM / Operations",
+    subitems: [
+      { href: "/admin/asset-drafts", label: "AI Asset Drafts" },
+      { href: "/admin/build-pipeline", label: "AI Asset Build Pipeline" },
+      { href: "/admin/packaging", label: "Packaging Center" },
+      { href: "/admin/opportunities", label: "Buyer Discovery" },
+      { href: "/admin/buyer-interest", label: "Buyer Interest" },
+      { href: "/admin/investor-leads", label: "Investor Leads" },
+      { href: "/admin/business-submissions", label: "Business Intake" },
+      { href: "/admin/underwriting", label: "Underwriting" },
+    ],
+  },
+  { href: "/admin/digital-assets", label: "Listings" },
   { href: "/admin/buyers", label: "Buyers" },
-  { href: "/admin/inquiries", label: "Inquiry Inbox" },
-  { href: "/admin/deal-room", label: "Deal Room" },
-  { href: "/admin/offers", label: "Offer Desk" },
-  { href: "/admin/buyer-offers", label: "Buyer Offers" },
-  { href: "/admin/offers/packages", label: "Offer Packages" },
-  { href: "/admin/offers/decisions", label: "Offer Decisions" },
-  { href: "/admin/contracts", label: "Contracts" },
-  { href: "/admin/contracts/readiness", label: "Contract Readiness" },
-  { href: "/admin/contracts/execution", label: "Contract Execution" },
-  { href: "/admin/transfers", label: "Transfer Desk" },
-  { href: "/admin/closeout", label: "Closeout Desk" },
-  { href: "/admin/deals", label: "Deal Lifecycle" },
-  { href: "/admin/matching", label: "Matching Desk" },
-  { href: "/admin/curation", label: "Curation Desk" },
-  { href: "/admin/curation/engagement", label: "Curation Engagement" },
-  { href: "/admin/access", label: "Access Desk" },
-  { href: "/admin/access/materials", label: "Materials Desk" },
-  { href: "/admin/access/engagement", label: "Access Engagement" },
-  { href: "/admin/access/diligence", label: "Diligence Desk" },
-  { href: "/admin/access/progression", label: "Progression Desk" },
-  { href: "/admin/activity", label: "Activity" },
-  { href: "/admin/exports", label: "Exports" },
-  { href: "/admin/risk", label: "Risk Desk" },
-  { href: "/admin/reporting", label: "Reporting" },
-  { href: "/admin/requests", label: "Requests" },
-  { href: "/admin/documents", label: "Documents" },
-  { href: "/admin/tasks", label: "Tasks" },
-  { href: "/admin/crm", label: "CRM" },
-  { href: "/admin/dialer", label: "Dialer" },
+  { href: "/admin/inquiries", label: "Inquiries" },
   { href: "/admin/settings", label: "Settings" },
 ];

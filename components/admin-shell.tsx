@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 import type { ReactNode } from "react";
 import { Logo } from "@/components/logo";
 import { adminNavItems } from "@/lib/navigation";
+import type { AdminNavItem } from "@/lib/navigation";
 
 export function AdminShell({
   children,
@@ -12,6 +14,88 @@ export function AdminShell({
   children: ReactNode;
 }>) {
   const pathname = usePathname();
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
+
+  const toggleSection = (label: string) => {
+    const newExpanded = new Set(expandedSections);
+    if (newExpanded.has(label)) {
+      newExpanded.delete(label);
+    } else {
+      newExpanded.add(label);
+    }
+    setExpandedSections(newExpanded);
+  };
+
+  const isItemActive = (item: AdminNavItem): boolean => {
+    if (item.href) {
+      return pathname === item.href;
+    }
+    if (item.subitems) {
+      return item.subitems.some((subitem) => isItemActive(subitem));
+    }
+    return false;
+  };
+
+  const renderNavItem = (item: AdminNavItem) => {
+    if (item.subitems) {
+      const isExpanded = expandedSections.has(item.label);
+      const hasActive = isItemActive(item);
+
+      return (
+        <div key={item.label}>
+          <button
+            onClick={() => toggleSection(item.label)}
+            className={[
+              "w-full rounded-2xl border px-4 py-3 text-sm font-medium transition text-left",
+              hasActive
+                ? "border-accent-200 bg-[rgba(160, 120, 50, 0.96)] text-accent-700"
+                : "border-transparent text-ink-500 hover:border-ink-200 hover:bg-[rgb(var(--surface))] hover:text-ink-950",
+            ].join(" ")}
+          >
+            <div className="flex items-center justify-between">
+              <span>{item.label}</span>
+              <span className="text-xs">{isExpanded ? "−" : "+"}</span>
+            </div>
+          </button>
+          {isExpanded && (
+            <div className="mt-1 space-y-1 border-l border-ink-200 pl-2">
+              {item.subitems.map((subitem) => (
+                <Link
+                  key={subitem.href}
+                  href={subitem.href || "#"}
+                  aria-current={pathname === subitem.href ? "page" : undefined}
+                  className={[
+                    "block rounded-2xl border px-4 py-2 text-xs font-medium transition",
+                    pathname === subitem.href
+                      ? "border-accent-200 bg-[rgba(160, 120, 50, 0.96)] text-accent-700"
+                      : "border-transparent text-ink-500 hover:border-ink-200 hover:bg-[rgb(var(--surface))] hover:text-ink-950",
+                  ].join(" ")}
+                >
+                  {subitem.label}
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    return (
+      <Link
+        key={item.href}
+        href={item.href || "/"}
+        aria-current={pathname === item.href ? "page" : undefined}
+        className={[
+          "block rounded-2xl border px-4 py-3 text-sm font-medium transition",
+          pathname === item.href
+            ? "border-accent-200 bg-[rgba(160, 120, 50, 0.96)] text-accent-700"
+            : "border-transparent text-ink-500 hover:border-ink-200 hover:bg-[rgb(var(--surface))] hover:text-ink-950",
+        ].join(" ")}
+      >
+        {item.label}
+      </Link>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(212,172,92,0.08),transparent_26%),linear-gradient(180deg,rgba(10,11,13,0.98),rgba(15,17,19,0.98))]">
@@ -31,24 +115,10 @@ export function AdminShell({
             </div>
           </Link>
           <nav className="max-h-[calc(100vh-12rem)] space-y-1 overflow-y-auto pr-1">
-            {adminNavItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                aria-current={pathname === item.href ? "page" : undefined}
-                className={[
-                  "block rounded-2xl border px-4 py-3 text-sm font-medium transition",
-                  pathname === item.href
-                    ? "border-accent-200 bg-[rgba(160, 120, 50, 0.96)] text-accent-700"
-                    : "border-transparent text-ink-500 hover:border-ink-200 hover:bg-[rgb(var(--surface))] hover:text-ink-950",
-                ].join(" ")}
-              >
-                {item.label}
-              </Link>
-            ))}
+            {adminNavItems.map((item) => renderNavItem(item))}
           </nav>
           <div className="mt-8 rounded-3xl border border-dashed border-ink-200 bg-[rgb(var(--surface))] p-4 text-sm leading-6 text-ink-600">
-            Placeholder admin shell only. No auth, database, or external integrations yet.
+            Simplified admin portal with CRM / Operations consolidation.
           </div>
         </aside>
         <div className="flex flex-col gap-6">
