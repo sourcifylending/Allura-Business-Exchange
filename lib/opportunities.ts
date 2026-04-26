@@ -19,6 +19,7 @@ export type OpportunityRecord = Readonly<{
   category: string;
   nda_required: boolean;
   published: boolean;
+  is_public: boolean;
 }>;
 
 export const opportunities: OpportunityRecord[] = [
@@ -38,6 +39,7 @@ export const opportunities: OpportunityRecord[] = [
     category: "AI Workflow Tool",
     nda_required: false,
     published: true,
+    is_public: false,
   },
   {
     listing_type: "ai_asset",
@@ -55,6 +57,7 @@ export const opportunities: OpportunityRecord[] = [
     category: "AI Sales Tool",
     nda_required: false,
     published: true,
+    is_public: false,
   },
   {
     listing_type: "business",
@@ -72,6 +75,7 @@ export const opportunities: OpportunityRecord[] = [
     category: "Home Services",
     nda_required: true,
     published: true,
+    is_public: false,
   },
   {
     listing_type: "business",
@@ -89,13 +93,16 @@ export const opportunities: OpportunityRecord[] = [
     category: "Specialty Services",
     nda_required: true,
     published: false,
+    is_public: false,
   },
 ];
 
+// Only export opportunities that are explicitly marked for public display with is_public flag
+// Demo/seeded data is never shown publicly - only real, approved assets
 export const aiAssetOpportunities = opportunities.filter(
-  (opportunity) => opportunity.listing_type === "ai_asset" && opportunity.published,
+  (opportunity) => opportunity.listing_type === "ai_asset" && opportunity.published && opportunity.is_public,
 );
 
 export const businessTeaserOpportunities = opportunities.filter(
-  (opportunity) => opportunity.listing_type === "business" && opportunity.published,
+  (opportunity) => opportunity.listing_type === "business" && opportunity.published && opportunity.is_public,
 );
