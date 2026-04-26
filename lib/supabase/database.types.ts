@@ -1,6 +1,24 @@
 export type MarketRadarStatus = "idea" | "researching" | "approved" | "rejected" | "later";
 export type MarketRadarLevel = "low" | "medium" | "high";
 export type BuyerType = "operator" | "investor" | "hybrid";
+export type PortalContactMethod = "email" | "phone" | "portal";
+export type PortalPreferences = {
+  preferred_contact_method: PortalContactMethod;
+  email_updates: boolean;
+  portal_reminders: boolean;
+};
+export type BuyerCuratedOpportunityStatus = "assigned" | "archived";
+export type BuyerCuratedOpportunityActionStatus = "viewed" | "saved" | "interested" | "passed";
+export type BuyerCuratedOpportunityMatchTier = "strong" | "good" | "moderate" | "light";
+export type BuyerCuratedOpportunityReason = {
+  code: string;
+  label: string;
+  detail: string;
+  weight: number;
+  safe_label: string;
+};
+export type BuyerOpportunityAccessStatus = "granted" | "viewed" | "expired" | "revoked";
+export type BuyerOpportunityAccessAcknowledgementStatus = "not_required" | "required" | "acknowledged" | "expired" | "revoked";
 export type BuyerStage = "new" | "qualified" | "active" | "watching" | "closed";
 export type ProofOfFundsStatus = "not_shown" | "unverified" | "verified";
 export type InquiryStatus = "new" | "reviewing" | "qualified" | "not_fit" | "waiting";
@@ -33,6 +51,25 @@ export type ContractStatus =
   | "transferred"
   | "closed"
   | "cancelled";
+export type ContractReadinessStatus =
+  | "not_started"
+  | "collecting_items"
+  | "buyer_ready"
+  | "seller_ready"
+  | "ready_for_contract"
+  | "blocked";
+export type ContractPartyReadinessStatus = "not_started" | "collecting_items" | "ready" | "blocked";
+export type ContractPacketStatus = "not_started" | "collecting_items" | "ready" | "released" | "blocked";
+export type ContractExecutionStatus =
+  | "not_started"
+  | "preparing"
+  | "buyer_review"
+  | "seller_review"
+  | "pending_admin"
+  | "fully_executed"
+  | "blocked"
+  | "cancelled";
+export type ContractPacketAudienceRole = "buyer" | "seller";
 export type SignatureStatus = "not_sent" | "pending" | "complete";
 export type PaymentStatus = "pending" | "received" | "blocked";
 export type TransferStatus = "not_started" | "in_progress" | "blocked" | "complete";
@@ -53,16 +90,36 @@ export type BuyerOfferSubmissionStatus =
   | "converted_to_offer"
   | "declined"
   | "withdrawn";
+export type BuyerOfferPackageStatus = "submitted" | "under_review" | "needs_revision" | "complete" | "withdrawn";
+export type BuyerOfferInvitationStatus = "invited" | "viewed" | "offer_submitted" | "expired" | "withdrawn";
+export type BuyerOfferInvitationResponseStatus = "viewed" | "offer_submitted" | null;
+export type BuyerOfferPresentationStatus = "not_presented" | "ready_to_present" | "presented" | "withdrawn";
+export type BuyerOfferSellerReviewStatus =
+  | "not_reviewed"
+  | "seller_reviewing"
+  | "seller_interested"
+  | "seller_declined"
+  | "accepted_for_offer_record"
+  | "withdrawn";
 export type PortalRequestTargetRole = "buyer" | "seller";
 export type PortalRequestType = "document_request" | "info_request" | "acknowledgment" | "next_step";
 export type PortalRequestStatus = "open" | "acknowledged" | "in_progress" | "completed" | "blocked" | "cancelled";
 export type ApplicationDocumentApplicationType = "buyer" | "seller";
 export type ApplicationDocumentStatus = "uploaded" | "received" | "under_review" | "approved" | "rejected";
+export type BuyerOpportunityAccessDocumentReleaseStatus = "released" | "hidden" | "archived";
 
 export type BusinessIntakeStatus = "new" | "in_review" | "needs_info" | "complete";
 export type BusinessReviewStatus = "pending" | "clear" | "red_flags" | "hold";
 export type BusinessUnderwritingStatus = "screening" | "reviewing" | "hold" | "approved" | "rejected";
 export type ApplicationStatus = "submitted" | "under_review" | "approved" | "rejected" | "invited" | "activated";
+
+export type DigitalAssetStatus = "for_sale" | "in_build" | "sold" | "paused" | "internal";
+export type DigitalAssetVisibility = "private" | "public";
+export type DigitalAssetTaskStatus = "open" | "in_progress" | "done" | "blocked";
+export type DigitalAssetTaskPriority = "low" | "normal" | "high" | "urgent";
+export type DigitalAssetBuyerInterestStatus = "new" | "contacted" | "interested" | "qualified" | "not_fit" | "closed";
+export type DigitalAssetBuyerInterestNDAStatus = "not_sent" | "sent" | "signed" | "declined";
+export type DigitalAssetBuyerInterestProofOfFundsStatus = "not_requested" | "requested" | "submitted" | "verified" | "rejected";
 
 type Timestamp = string;
 
@@ -72,10 +129,10 @@ type RowBase = {
   updated_at: Timestamp;
 };
 
-type InsertRow<T extends RowBase> = Omit<T, "id" | "created_at" | "updated_at"> &
+export type InsertRow<T extends RowBase> = Omit<T, "id" | "created_at" | "updated_at"> &
   Partial<Pick<T, "id" | "created_at" | "updated_at">>;
 
-type UpdateRow<T extends RowBase> = Partial<Omit<T, "id" | "created_at" | "updated_at">> &
+export type UpdateRow<T extends RowBase> = Partial<Omit<T, "id" | "created_at" | "updated_at">> &
   Partial<Pick<T, "id" | "created_at" | "updated_at">>;
 
 export type MarketRadarRow = RowBase & {
@@ -209,6 +266,88 @@ export type BuyerApplicationRow = RowBase & {
   invited_at: string | null;
   invited_by: string | null;
   linked_user_id: string | null;
+  portal_preferences: PortalPreferences;
+};
+
+export type BuyerCuratedOpportunityRow = RowBase & {
+  buyer_application_id: string;
+  asset_packaging_id: string;
+  status: BuyerCuratedOpportunityStatus;
+  match_score: number;
+  match_tier: BuyerCuratedOpportunityMatchTier;
+  match_reasons: BuyerCuratedOpportunityReason[];
+  safe_reasons: string[];
+  assigned_at: string;
+  assigned_by: string;
+  buyer_last_viewed_at: string | null;
+  buyer_action_status: BuyerCuratedOpportunityActionStatus | null;
+  buyer_action_at: string | null;
+  portal_note: string;
+};
+
+export type BuyerOpportunityAccessRow = RowBase & {
+  buyer_application_id: string;
+  asset_packaging_id: string;
+  curated_assignment_id: string | null;
+  status: BuyerOpportunityAccessStatus;
+  granted_at: string;
+  granted_by: string;
+  expires_at: string | null;
+  buyer_last_opened_at: string | null;
+  portal_note: string;
+  acknowledgement_required: boolean;
+  acknowledgement_status: BuyerOpportunityAccessAcknowledgementStatus;
+  acknowledgement_label: string;
+  acknowledgement_text: string;
+  acknowledged_at: string | null;
+  acknowledged_by: string | null;
+  review_due_at: string | null;
+  revoked_at: string | null;
+  revoked_by: string | null;
+};
+
+export type BuyerOpportunityAccessDocumentRow = RowBase & {
+  buyer_opportunity_access_id: string;
+  application_document_id: string;
+  release_status: BuyerOpportunityAccessDocumentReleaseStatus;
+  released_at: string;
+  released_by: string;
+  display_order: number;
+  portal_label: string;
+};
+
+export type BuyerOpportunityAccessEventType =
+  | "access_opened"
+  | "document_viewed"
+  | "document_downloaded"
+  | "acknowledged"
+  | "grant_extended"
+  | "grant_revoked";
+export type BuyerDiligenceRequestType =
+  | "document_clarification"
+  | "additional_material_request"
+  | "financial_question"
+  | "operations_question"
+  | "other";
+export type BuyerDiligenceRequestStatus = "submitted" | "under_review" | "fulfilled" | "declined" | "closed";
+
+export type BuyerOpportunityAccessEventRow = RowBase & {
+  buyer_opportunity_access_id: string;
+  event_type: BuyerOpportunityAccessEventType;
+  application_document_id: string | null;
+  metadata: Record<string, unknown>;
+};
+
+export type BuyerDiligenceRequestRow = RowBase & {
+  buyer_opportunity_access_id: string;
+  application_document_id: string | null;
+  request_type: BuyerDiligenceRequestType;
+  title: string;
+  buyer_message: string;
+  status: BuyerDiligenceRequestStatus;
+  admin_response_summary: string | null;
+  resolved_at: string | null;
+  resolved_by: string | null;
 };
 
 export type SellerApplicationRow = RowBase & {
@@ -229,6 +368,7 @@ export type SellerApplicationRow = RowBase & {
   invited_at: string | null;
   invited_by: string | null;
   linked_user_id: string | null;
+  portal_preferences: PortalPreferences;
 };
 
 export type InquiryRow = RowBase & {
@@ -276,6 +416,30 @@ export type ContractRow = RowBase & {
   payment_status: PaymentStatus;
   notes: string;
   transfer_row_id: string | null;
+  readiness_status: ContractReadinessStatus;
+  buyer_readiness_status: ContractPartyReadinessStatus;
+  seller_readiness_status: ContractPartyReadinessStatus;
+  readiness_reviewed_at: string | null;
+  readiness_reviewed_by: string | null;
+  buyer_packet_status: ContractPacketStatus;
+  seller_packet_status: ContractPacketStatus;
+  execution_status: ContractExecutionStatus;
+  buyer_execution_status: ContractExecutionStatus;
+  seller_execution_status: ContractExecutionStatus;
+  execution_ready_at: string | null;
+  execution_completed_at: string | null;
+  execution_reviewed_by: string | null;
+};
+
+export type ContractPacketDocumentRow = RowBase & {
+  contract_row_id: string;
+  application_document_id: string;
+  audience_role: ContractPacketAudienceRole;
+  release_status: BuyerOpportunityAccessDocumentReleaseStatus;
+  released_at: string;
+  released_by: string;
+  display_order: number;
+  portal_label: string;
 };
 
 export type TransferRow = RowBase & {
@@ -338,6 +502,155 @@ export type ApplicationDocumentRow = RowBase & {
   reviewed_by: string | null;
 };
 
+export type InvestorLeadVerificationStatus = "unverified" | "needs_review" | "verified" | "blocked";
+export type InvestorLeadOutreachStatus = "draft" | "pending_approval" | "approved" | "blocked";
+export type InvestorLeadSourceType =
+  | "manual_entry"
+  | "manual_import"
+  | "crm_history"
+  | "company_website"
+  | "public_directory"
+  | "investor_directory"
+  | "marketplace_profile"
+  | "public_search"
+  | "uploaded_csv"
+  | "purchased_list"
+  | "other";
+export type InvestorLeadOutreachChannel = "email" | "sms" | "linkedin" | "call";
+export type InvestorLeadScoreBand = "strong" | "good" | "possible" | "manual_review";
+
+export type InvestorLeadRow = RowBase & {
+  asset_registry_id: string;
+  full_name: string;
+  company_name: string;
+  title: string;
+  website: string | null;
+  email: string | null;
+  phone: string | null;
+  linkedin_url: string | null;
+  instagram_url: string | null;
+  facebook_url: string | null;
+  location: string;
+  industry: string;
+  buyer_category: string;
+  likely_asset_fit: string;
+  estimated_capital_capacity: string | null;
+  source_url: string;
+  source_type: InvestorLeadSourceType;
+  verification_status: InvestorLeadVerificationStatus;
+  confidence_score: number;
+  last_verified_date: string | null;
+  outreach_owner: string;
+  outreach_status: InvestorLeadOutreachStatus;
+  outreach_draft: string;
+  notes: string;
+};
+
+export type AssetLeadListRow = RowBase & {
+  asset_registry_id: string;
+  investor_lead_id: string;
+  lead_score: number;
+  lead_rank: number;
+  generation_source: string;
+  notes: string;
+};
+
+export type LeadSourceRow = RowBase & {
+  investor_lead_id: string;
+  asset_registry_id: string | null;
+  source_type: InvestorLeadSourceType;
+  source_url: string;
+  source_title: string;
+  proof_notes: string;
+  verified_by: string;
+};
+
+export type LeadScoreRow = RowBase & {
+  investor_lead_id: string;
+  asset_registry_id: string;
+  score: number;
+  score_band: InvestorLeadScoreBand;
+  score_breakdown: Record<string, unknown>;
+  rationale: string;
+  scored_by: string;
+};
+
+export type LeadOutreachTaskRow = RowBase & {
+  investor_lead_id: string;
+  asset_registry_id: string;
+  channel: InvestorLeadOutreachChannel;
+  subject: string;
+  draft_body: string;
+  approval_status: InvestorLeadOutreachStatus;
+  approved_at: string | null;
+  approved_by: string | null;
+  notes: string;
+};
+
+export type LeadVerificationLogRow = RowBase & {
+  investor_lead_id: string;
+  asset_registry_id: string | null;
+  verification_status: InvestorLeadVerificationStatus;
+  source_url: string;
+  source_type: InvestorLeadSourceType;
+  verified_by: string;
+  notes: string;
+  metadata: Record<string, unknown>;
+};
+
+export type DoNotContactRow = RowBase & {
+  email: string | null;
+  phone: string | null;
+  website: string | null;
+  linkedin_url: string | null;
+  reason: string;
+  added_by: string;
+  active: boolean;
+};
+
+export type DigitalAssetRow = RowBase & {
+  name: string;
+  slug: string;
+  status: DigitalAssetStatus;
+  asset_type: string | null;
+  revenue_stage: string | null;
+  build_status: string | null;
+  asking_price: number | null;
+  local_path: string | null;
+  public_url: string | null;
+  admin_url: string | null;
+  github_repo_url: string | null;
+  vercel_project_url: string | null;
+  supabase_project_url: string | null;
+  short_description: string | null;
+  buyer_summary: string | null;
+  visibility: DigitalAssetVisibility;
+  nda_required: boolean;
+  sale_readiness_score: number | null;
+  notes: string | null;
+};
+
+export type DigitalAssetTaskRow = RowBase & {
+  digital_asset_id: string;
+  title: string;
+  status: DigitalAssetTaskStatus;
+  priority: DigitalAssetTaskPriority;
+  due_date?: string | null;
+  notes?: string | null;
+};
+
+export type DigitalAssetBuyerInterestRow = RowBase & {
+  digital_asset_id: string;
+  buyer_name?: string | null;
+  buyer_email?: string | null;
+  buyer_phone?: string | null;
+  status: DigitalAssetBuyerInterestStatus;
+  nda_status: DigitalAssetBuyerInterestNDAStatus;
+  proof_of_funds_status: DigitalAssetBuyerInterestProofOfFundsStatus;
+  last_contacted_at?: string | null;
+  notes?: string | null;
+};
+
 export type BuyerOpportunityInteractionRow = RowBase & {
   buyer_application_id: string;
   asset_packaging_id: string;
@@ -349,6 +662,7 @@ export type BuyerOfferSubmissionRow = RowBase & {
   buyer_application_id: string;
   asset_packaging_id: string;
   owner_user_id: string;
+  buyer_offer_invitation_id: string | null;
   proposed_price: string;
   structure_preference: string;
   financing_plan: string;
@@ -356,9 +670,31 @@ export type BuyerOfferSubmissionRow = RowBase & {
   notes: string;
   status: BuyerOfferSubmissionStatus;
   admin_notes: string;
+  package_status: BuyerOfferPackageStatus;
+  package_summary_note: string;
+  presentation_status: BuyerOfferPresentationStatus;
+  presented_at: string | null;
+  presented_by: string | null;
+  seller_review_status: BuyerOfferSellerReviewStatus;
+  seller_reviewed_at: string | null;
+  seller_response_summary: string;
   offer_record_id: string | null;
   reviewed_at: string | null;
   reviewed_by: string | null;
+};
+
+export type BuyerOfferInvitationRow = RowBase & {
+  buyer_opportunity_access_id: string;
+  buyer_diligence_request_id: string | null;
+  status: BuyerOfferInvitationStatus;
+  invited_at: string;
+  invited_by: string;
+  expires_at: string | null;
+  buyer_last_opened_at: string | null;
+  buyer_response_status: BuyerOfferInvitationResponseStatus;
+  buyer_response_at: string | null;
+  portal_note: string;
+  linked_offer_submission_id: string | null;
 };
 
 export type Database = {
@@ -393,6 +729,36 @@ export type Database = {
         Row: BuyerOpportunityInteractionRow;
         Insert: InsertRow<BuyerOpportunityInteractionRow>;
         Update: UpdateRow<BuyerOpportunityInteractionRow>;
+      };
+      buyer_curated_opportunities: {
+        Row: BuyerCuratedOpportunityRow;
+        Insert: InsertRow<BuyerCuratedOpportunityRow>;
+        Update: UpdateRow<BuyerCuratedOpportunityRow>;
+      };
+      buyer_opportunity_access: {
+        Row: BuyerOpportunityAccessRow;
+        Insert: InsertRow<BuyerOpportunityAccessRow>;
+        Update: UpdateRow<BuyerOpportunityAccessRow>;
+      };
+      buyer_opportunity_access_documents: {
+        Row: BuyerOpportunityAccessDocumentRow;
+        Insert: InsertRow<BuyerOpportunityAccessDocumentRow>;
+        Update: UpdateRow<BuyerOpportunityAccessDocumentRow>;
+      };
+      buyer_opportunity_access_events: {
+        Row: BuyerOpportunityAccessEventRow;
+        Insert: InsertRow<BuyerOpportunityAccessEventRow>;
+        Update: UpdateRow<BuyerOpportunityAccessEventRow>;
+      };
+      buyer_diligence_requests: {
+        Row: BuyerDiligenceRequestRow;
+        Insert: InsertRow<BuyerDiligenceRequestRow>;
+        Update: UpdateRow<BuyerDiligenceRequestRow>;
+      };
+      buyer_offer_invitations: {
+        Row: BuyerOfferInvitationRow;
+        Insert: InsertRow<BuyerOfferInvitationRow>;
+        Update: UpdateRow<BuyerOfferInvitationRow>;
       };
       buyer_offer_submissions: {
         Row: BuyerOfferSubmissionRow;
@@ -429,6 +795,11 @@ export type Database = {
         Insert: InsertRow<ContractRow>;
         Update: UpdateRow<ContractRow>;
       };
+      contract_packet_documents: {
+        Row: ContractPacketDocumentRow;
+        Insert: InsertRow<ContractPacketDocumentRow>;
+        Update: UpdateRow<ContractPacketDocumentRow>;
+      };
       transfers: {
         Row: TransferRow;
         Insert: InsertRow<TransferRow>;
@@ -443,6 +814,56 @@ export type Database = {
         Row: ApplicationDocumentRow;
         Insert: InsertRow<ApplicationDocumentRow>;
         Update: UpdateRow<ApplicationDocumentRow>;
+      };
+      investor_leads: {
+        Row: InvestorLeadRow;
+        Insert: InsertRow<InvestorLeadRow>;
+        Update: UpdateRow<InvestorLeadRow>;
+      };
+      asset_lead_lists: {
+        Row: AssetLeadListRow;
+        Insert: InsertRow<AssetLeadListRow>;
+        Update: UpdateRow<AssetLeadListRow>;
+      };
+      lead_sources: {
+        Row: LeadSourceRow;
+        Insert: InsertRow<LeadSourceRow>;
+        Update: UpdateRow<LeadSourceRow>;
+      };
+      lead_scores: {
+        Row: LeadScoreRow;
+        Insert: InsertRow<LeadScoreRow>;
+        Update: UpdateRow<LeadScoreRow>;
+      };
+      lead_outreach_tasks: {
+        Row: LeadOutreachTaskRow;
+        Insert: InsertRow<LeadOutreachTaskRow>;
+        Update: UpdateRow<LeadOutreachTaskRow>;
+      };
+      lead_verification_logs: {
+        Row: LeadVerificationLogRow;
+        Insert: InsertRow<LeadVerificationLogRow>;
+        Update: UpdateRow<LeadVerificationLogRow>;
+      };
+      do_not_contact: {
+        Row: DoNotContactRow;
+        Insert: InsertRow<DoNotContactRow>;
+        Update: UpdateRow<DoNotContactRow>;
+      };
+      digital_assets: {
+        Row: DigitalAssetRow;
+        Insert: InsertRow<DigitalAssetRow>;
+        Update: UpdateRow<DigitalAssetRow>;
+      };
+      digital_asset_tasks: {
+        Row: DigitalAssetTaskRow;
+        Insert: InsertRow<DigitalAssetTaskRow>;
+        Update: UpdateRow<DigitalAssetTaskRow>;
+      };
+      digital_asset_buyer_interest: {
+        Row: DigitalAssetBuyerInterestRow;
+        Insert: InsertRow<DigitalAssetBuyerInterestRow>;
+        Update: UpdateRow<DigitalAssetBuyerInterestRow>;
       };
     };
   };
