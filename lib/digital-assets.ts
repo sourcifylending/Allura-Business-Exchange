@@ -103,6 +103,17 @@ export async function getDigitalAssetBuyerInterests(assetId: string) {
   return (data || []) as DigitalAssetBuyerInterestRow[];
 }
 
+export async function getBuyerInterestById(id: string) {
+  const client = createClient();
+  const { data, error } = await (client.from("digital_asset_buyer_interest") as any)
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (error) throw error;
+  return data as DigitalAssetBuyerInterestRow;
+}
+
 export async function createDigitalAssetBuyerInterest(
   interest: InsertRow<DigitalAssetBuyerInterestRow>
 ) {

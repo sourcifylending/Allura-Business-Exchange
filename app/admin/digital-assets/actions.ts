@@ -5,8 +5,9 @@ import {
   deleteDigitalAssetTask,
   createDigitalAssetBuyerInterest,
   updateDigitalAsset,
+  updateDigitalAssetBuyerInterest,
 } from "@/lib/digital-assets";
-import type { InsertRow, DigitalAssetBuyerInterestRow, UpdateRow, DigitalAssetRow } from "@/lib/supabase/database.types";
+import type { InsertRow, DigitalAssetBuyerInterestRow, UpdateRow, DigitalAssetRow, DigitalAssetBuyerInterestNDAStatus } from "@/lib/supabase/database.types";
 
 export async function addTaskAction(
   assetId: string,
@@ -41,4 +42,20 @@ export async function addBuyerInterestAction(
 
 export async function updateAssetNotesAction(assetId: string, notes: string) {
   return updateDigitalAsset(assetId, { notes } as UpdateRow<DigitalAssetRow>);
+}
+
+export async function updateBuyerNDAStatusAction(
+  buyerInterestId: string,
+  ndaStatus: DigitalAssetBuyerInterestNDAStatus
+) {
+  return updateDigitalAssetBuyerInterest(buyerInterestId, {
+    nda_status: ndaStatus,
+  } as UpdateRow<DigitalAssetBuyerInterestRow>);
+}
+
+export async function updateBuyerFieldAction(
+  buyerInterestId: string,
+  updates: Partial<UpdateRow<DigitalAssetBuyerInterestRow>>
+) {
+  return updateDigitalAssetBuyerInterest(buyerInterestId, updates as UpdateRow<DigitalAssetBuyerInterestRow>);
 }
