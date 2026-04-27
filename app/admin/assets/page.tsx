@@ -6,7 +6,16 @@ import { getDigitalAssets } from "@/lib/digital-assets";
 export const dynamic = "force-dynamic";
 
 export default async function AssetsPage() {
-  const assets = await getDigitalAssets();
+  let assets = [];
+  let error: string | null = null;
+
+  try {
+    assets = await getDigitalAssets();
+  } catch (err) {
+    error = "Unable to load assets. The database may still be initializing.";
+    console.error("Database error:", err);
+  }
+
   const saleAssets = assets.filter(a => a.status === "for_sale");
 
   return (
@@ -15,6 +24,14 @@ export default async function AssetsPage() {
         title="Assets"
         description="Digital assets available for sale and manage buyer interest."
       />
+
+      {error && (
+        <PageCard title="Notice" description="">
+          <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+            {error}
+          </div>
+        </PageCard>
+      )}
 
       <PageCard title="Add New Asset" description="">
         <Link
