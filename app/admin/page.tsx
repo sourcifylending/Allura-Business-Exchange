@@ -92,12 +92,12 @@ function MetricCard({
   icon: string;
 }>) {
   return (
-    <div className="rounded-2xl border border-accent-400 bg-ink-900 p-4">
+    <div className="rounded-2xl border border-accent-400 bg-ink-50 p-4">
       <div className="flex items-center justify-between">
-        <div className="text-sm font-medium text-white">{title}</div>
+        <div className="text-sm font-medium text-ink-950">{title}</div>
         <div className="text-xl">{icon}</div>
       </div>
-      <div className="mt-2 text-3xl font-bold text-accent-400">{value}</div>
+      <div className="mt-2 text-3xl font-bold text-accent-500">{value}</div>
     </div>
   );
 }
