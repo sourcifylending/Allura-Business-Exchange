@@ -80,6 +80,11 @@ function readBuyerApplicationFormData(formData: FormData) {
       message: readText("message"),
       status: "submitted" as BuyerApplicationRow["status"],
       admin_notes: "",
+      portal_preferences: {
+        preferred_contact_method: "email",
+        email_updates: true,
+        portal_reminders: true,
+      },
     } satisfies BuyerApplicationValues,
   } as const;
 }
@@ -119,6 +124,11 @@ function readSellerApplicationFormData(formData: FormData) {
       reason_for_selling: readText("reason_for_selling"),
       status: "submitted" as SellerApplicationRow["status"],
       admin_notes: "",
+      portal_preferences: {
+        preferred_contact_method: "email",
+        email_updates: true,
+        portal_reminders: true,
+      },
     } satisfies SellerApplicationValues,
   } as const;
 }

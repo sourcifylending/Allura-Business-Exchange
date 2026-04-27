@@ -120,6 +120,7 @@ export type DigitalAssetTaskPriority = "low" | "normal" | "high" | "urgent";
 export type DigitalAssetBuyerInterestStatus = "new" | "contacted" | "interested" | "qualified" | "not_fit" | "closed";
 export type DigitalAssetBuyerInterestNDAStatus = "not_sent" | "sent" | "signed" | "declined";
 export type DigitalAssetBuyerInterestProofOfFundsStatus = "not_requested" | "requested" | "submitted" | "verified" | "rejected";
+export type DigitalAssetBuyerStage = "new" | "nda_sent" | "nda_signed" | "reviewing" | "offer" | "closed" | "dead";
 
 type Timestamp = string;
 
@@ -649,6 +650,12 @@ export type DigitalAssetBuyerInterestRow = RowBase & {
   proof_of_funds_status: DigitalAssetBuyerInterestProofOfFundsStatus;
   last_contacted_at?: string | null;
   notes?: string | null;
+  nda_sent_date?: string | null;
+  nda_signed_date?: string | null;
+  signed_nda_url?: string | null;
+  next_follow_up_date?: string | null;
+  buyer_stage?: DigitalAssetBuyerStage | null;
+  document_generated_at?: string | null;
 };
 
 export type BuyerOpportunityInteractionRow = RowBase & {

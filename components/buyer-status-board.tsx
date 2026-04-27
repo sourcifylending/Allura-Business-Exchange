@@ -1,7 +1,7 @@
 "use client";
 
 import { PageCard } from "@/components/page-card";
-import type { DigitalAssetBuyerInterestRow, DigitalAssetBuyerInterestNDAStatus } from "@/lib/supabase/database.types";
+import type { DigitalAssetBuyerInterestRow, DigitalAssetBuyerInterestNDAStatus, DigitalAssetBuyerStage } from "@/lib/supabase/database.types";
 import { updateBuyerFieldAction } from "@/app/admin/digital-assets/actions";
 
 type BuyerStatusBoardProps = Readonly<{
@@ -42,7 +42,7 @@ export function BuyerStatusBoard({ buyer, buyerId, setBuyerData }: BuyerStatusBo
     }
   };
 
-  const handleBuyerStageChange = async (stage: string) => {
+  const handleBuyerStageChange = async (stage: DigitalAssetBuyerStage) => {
     try {
       const updated = await updateBuyerFieldAction(buyerId, {
         buyer_stage: stage,

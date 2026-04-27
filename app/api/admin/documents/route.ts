@@ -5,6 +5,7 @@ import { generateSummaryHTML } from "@/lib/document-templates/summary-template";
 import { generatePresentationHTML } from "@/lib/document-templates/presentation-template";
 import { generateChecklistHTML } from "@/lib/document-templates/checklist-template";
 import { generateEmailHTML } from "@/lib/document-templates/email-template";
+import type { DigitalAssetBuyerInterestRow, DigitalAssetRow } from "@/lib/supabase/database.types";
 
 export async function GET(request: NextRequest) {
   try {
@@ -27,7 +28,7 @@ export async function GET(request: NextRequest) {
       .from("digital_asset_buyer_interest")
       .select("*")
       .eq("id", buyerInterestId)
-      .single();
+      .single() as { data: DigitalAssetBuyerInterestRow | null; error: any };
 
     if (buyerError || !buyerInterest) {
       return NextResponse.json({ error: "Buyer interest not found" }, { status: 404 });
@@ -38,7 +39,7 @@ export async function GET(request: NextRequest) {
       .from("digital_assets")
       .select("*")
       .eq("id", assetId)
-      .single();
+      .single() as { data: DigitalAssetRow | null; error: any };
 
     if (assetError || !asset) {
       return NextResponse.json({ error: "Asset not found" }, { status: 404 });
