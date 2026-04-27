@@ -3,20 +3,35 @@ import { AdminPageHeader } from "@/components/admin-page-header";
 import { PageCard } from "@/components/page-card";
 import { getDigitalAssets } from "@/lib/digital-assets";
 import { createClient } from "@/lib/supabase/server";
-import type { DigitalAssetBuyerInterestRow } from "@/lib/supabase/database.types";
+import type { DigitalAssetBuyerInterestRow, DigitalAssetRow } from "@/lib/supabase/database.types";
 
 export const dynamic = "force-dynamic";
 
 export default async function BuyersPage() {
-  const assets = await getDigitalAssets();
-  const client = createClient();
-  const { data: buyerInterests } = await (client.from("digital_asset_buyer_interest") as any)
-    .select("*")
-    .order("created_at", { ascending: false });
+  let assets: DigitalAssetRow[] = [];
+  let buyers: DigitalAssetBuyerInterestRow[] = [];
+  let error: string | null = null;
 
-  const buyers = (buyerInterests || []) as DigitalAssetBuyerInterestRow[];
-  const buyersAwaitingNda = buyers.filter((b) => b.nda_status === "sent").length;
-  const buyersWithSignedNda = buyers.filter((b) => b.nda_status === "signed").length;
+  try {
+    assets = await getDigitalAssets();
+    const client = createClient();
+    const { data: buyerInterests, error: dbError } = await (client.from("digital_asset_buyer_interest") as any)
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (dbError) {
+      error = "Unable to load buyers. The database may still be initializing.";
+      console.error("Database error:", dbError);
+    } else {
+      buyers = (buyerInterests || []) as DigitalAssetBuyerInterestRow[];
+    }
+  } catch (err) {
+    error = "Error loading buyer data";
+    console.error("Error:", err);
+  }
+
+  const buyersAwaitingNda = buyers.filter((b) => b?.nda_status === "sent" || b?.nda_status === "not_sent").length;
+  const buyersWithSignedNda = buyers.filter((b) => b?.nda_status === "signed").length;
 
   return (
     <div className="grid gap-6">
@@ -24,6 +39,14 @@ export default async function BuyersPage() {
         title="Buyers"
         description="Manage buyer inquiries, NDA status, and deal pipeline for all assets."
       />
+
+      {error && (
+        <PageCard title="Notice" description="">
+          <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+            {error}
+          </div>
+        </PageCard>
+      )}
 
       <PageCard title="Add New Buyer" description="">
         <Link

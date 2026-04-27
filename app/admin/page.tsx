@@ -8,21 +8,36 @@ import type { DigitalAssetBuyerInterestRow } from "@/lib/supabase/database.types
 export const dynamic = "force-dynamic";
 
 export default async function AdminPage() {
-  const assets = await getDigitalAssets();
-  const client = createClient();
+  let assets = [];
+  let buyers: DigitalAssetBuyerInterestRow[] = [];
+  let activeAssets = 0;
+  let buyersAwaitingNda = 0;
+  let ndasSent = 0;
+  let openDeals = 0;
+  let sourcifyAsset = null;
 
-  const { data: buyerInterests } = await (client.from("digital_asset_buyer_interest") as any)
-    .select("*")
-    .order("created_at", { ascending: false });
+  try {
+    assets = await getDigitalAssets();
+    activeAssets = assets.filter(a => a.status === "for_sale").length;
 
-  const buyers = (buyerInterests || []) as DigitalAssetBuyerInterestRow[];
-  const activeAssets = assets.filter(a => a.status === "for_sale").length;
-  const buyersAwaitingNda = buyers.filter((b) => b.nda_status === "not_sent" || b.nda_status === "sent").length;
-  const ndasSent = buyers.filter((b) => b.nda_status === "sent").length;
-  const openDeals = buyers.filter((b) => b.nda_status === "signed" && b.status !== "closed").length;
+    const client = createClient();
+    const { data: buyerInterests, error } = await (client.from("digital_asset_buyer_interest") as any)
+      .select("*")
+      .order("created_at", { ascending: false });
 
-  // Find SourcifyLending asset
-  const sourcifyAsset = assets.find(a => a.name.toLowerCase().includes("sourcify"));
+    if (!error && buyerInterests) {
+      buyers = (buyerInterests || []) as DigitalAssetBuyerInterestRow[];
+      buyersAwaitingNda = buyers.filter((b) => b?.nda_status === "not_sent" || b?.nda_status === "sent").length;
+      ndasSent = buyers.filter((b) => b?.nda_status === "sent").length;
+      openDeals = buyers.filter((b) => b?.nda_status === "signed" && b?.status !== "closed").length;
+    }
+
+    // Find SourcifyLending asset
+    sourcifyAsset = assets.find(a => a.name.toLowerCase().includes("sourcify")) || null;
+  } catch (err) {
+    console.error("Error loading dashboard data:", err);
+    // Continue with defaults - allow page to render with zero counts
+  }
 
   return (
     <div className="grid gap-6">
