@@ -2,11 +2,12 @@ import Link from "next/link";
 import { AdminPageHeader } from "@/components/admin-page-header";
 import { PageCard } from "@/components/page-card";
 import { getDigitalAssets } from "@/lib/digital-assets";
+import type { DigitalAssetRow } from "@/lib/supabase/database.types";
 
 export const dynamic = "force-dynamic";
 
 export default async function AssetsPage() {
-  let assets = [];
+  let assets: DigitalAssetRow[] = [];
   let error: string | null = null;
 
   try {
