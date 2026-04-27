@@ -26,24 +26,12 @@ export default async function BuyersPage() {
       />
 
       <PageCard title="Add New Buyer" description="">
-        <div className="space-y-3">
-          <p className="text-sm text-ink-600">Quick add a buyer to any asset. Select an asset to get started.</p>
-          <div className="flex flex-col gap-2">
-            {assets.length === 0 ? (
-              <p className="text-sm text-ink-600">No assets available. Create an asset first.</p>
-            ) : (
-              assets.map(asset => (
-                <Link
-                  key={asset.id}
-                  href={`/admin/digital-assets/${asset.id}?tab=buyers`}
-                  className="inline-block rounded-lg bg-accent-600 px-4 py-2 text-sm font-medium text-white hover:bg-accent-700 transition text-left"
-                >
-                  + Add Buyer for {asset.name}
-                </Link>
-              ))
-            )}
-          </div>
-        </div>
+        <Link
+          href="/admin/buyers/new"
+          className="inline-block rounded-lg bg-accent-600 px-4 py-2 text-sm font-medium text-white hover:bg-accent-700 transition"
+        >
+          + Add Buyer
+        </Link>
       </PageCard>
 
       <PageCard title="Buyer Pipeline Status" description="">

@@ -18,7 +18,7 @@ export default async function AssetsPage() {
 
       <PageCard title="Add New Asset" description="">
         <Link
-          href="/admin/digital-assets/new"
+          href="/admin/assets/new"
           className="inline-block rounded-lg bg-accent-600 px-4 py-2 text-sm font-medium text-white hover:bg-accent-700 transition"
         >
           + Add Asset
