@@ -7,6 +7,8 @@ import { generateChecklistHTML } from "@/lib/document-templates/checklist-templa
 import { generateEmailHTML } from "@/lib/document-templates/email-template";
 import type { DigitalAssetBuyerInterestRow, DigitalAssetRow } from "@/lib/supabase/database.types";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;

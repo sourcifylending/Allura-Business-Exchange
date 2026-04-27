@@ -186,8 +186,8 @@ function requestOverdueBucket(days: number | null) {
   return "15+ days";
 }
 
-function isActiveSubmission(row: BuyerOfferSubmissionRow) {
-  return ["submitted", "under_review", "needs_follow_up", "approved_to_present"].includes(row.status);
+function isActiveSubmission(row: any) {
+  return row && ["submitted", "under_review", "needs_follow_up", "approved_to_present"].includes(row.status);
 }
 
 function isActiveOffer(record: DealLifecycleRecord) {
