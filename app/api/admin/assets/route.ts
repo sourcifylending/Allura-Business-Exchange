@@ -21,6 +21,9 @@ export async function POST(request: NextRequest) {
           notes: body.notes || null,
           visibility: "private",
           nda_required: true,
+          supabase_project_url: null,
+          github_repo_url: null,
+          vercel_project_url: null,
         },
       ])
       .select()
