@@ -6,26 +6,16 @@ export default async function AdminPage() {
   return (
     <div className="grid gap-6">
       <AdminPageHeader
-        title="Admin Dashboard"
-        description="Asset sale command center for managing SourcifyLending and future digital assets."
+        title="Allura Asset Sale Dashboard"
+        description="Command center for managing digital asset sales. Track buyer pipeline, NDA status, and deal progress."
       />
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        <OperatingCard
-          title="SourcifyLending Asset Sale"
-          status="Active"
-          detail="Ready for buyer acquisition"
-          color="bg-green-50 border-green-200"
-        />
-        <OperatingCard
-          title="CombatPilot AI"
-          status="In Build"
-          detail="Development in progress"
-          color="bg-blue-50 border-blue-200"
-        />
-        <OperatingCard title="Buyers Awaiting NDA" status="0" detail="No active pending" color="bg-amber-50 border-amber-200" />
-        <OperatingCard title="Follow-Ups Due" status="0" detail="All current" color="bg-purple-50 border-purple-200" />
-        <OperatingCard title="Open Deals" status="0" detail="Pipeline ready" color="bg-pink-50 border-pink-200" />
+        <MetricCard title="Active Assets" value="1" icon="📦" />
+        <MetricCard title="Buyers Awaiting NDA" value="0" icon="⏳" />
+        <MetricCard title="NDAs Sent" value="0" icon="📄" />
+        <MetricCard title="Open Deals" value="0" icon="🤝" />
+        <MetricCard title="Follow-Ups Due" value="0" icon="📞" />
       </section>
 
       <PageCard title="Quick Actions" description="">
@@ -34,7 +24,7 @@ export default async function AdminPage() {
             href="/admin/assets"
             className="flex-1 rounded-lg bg-accent-600 px-4 py-3 text-center text-sm font-semibold text-white hover:bg-accent-700 transition"
           >
-            Manage SourcifyLending Sale
+            Add Asset
           </Link>
           <Link
             href="/admin/buyers"
@@ -42,28 +32,34 @@ export default async function AdminPage() {
           >
             Add Buyer
           </Link>
+          <Link
+            href="/admin/digital-assets"
+            className="flex-1 rounded-lg bg-ink-700 px-4 py-3 text-center text-sm font-semibold text-white hover:bg-ink-800 transition"
+          >
+            Manage SourcifyLending
+          </Link>
         </div>
       </PageCard>
     </div>
   );
 }
 
-function OperatingCard({
+function MetricCard({
   title,
-  status,
-  detail,
-  color,
+  value,
+  icon,
 }: Readonly<{
   title: string;
-  status: string;
-  detail: string;
-  color: string;
+  value: string;
+  icon: string;
 }>) {
   return (
-    <div className={`rounded-2xl border p-4 ${color}`}>
-      <div className="text-sm font-medium text-ink-900">{title}</div>
-      <div className="mt-2 text-2xl font-bold text-ink-950">{status}</div>
-      <div className="mt-1 text-xs text-ink-600">{detail}</div>
+    <div className="rounded-2xl border border-accent-400 bg-ink-900 p-4">
+      <div className="flex items-center justify-between">
+        <div className="text-sm font-medium text-white">{title}</div>
+        <div className="text-xl">{icon}</div>
+      </div>
+      <div className="mt-2 text-3xl font-bold text-accent-400">{value}</div>
     </div>
   );
 }
