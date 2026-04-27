@@ -14,25 +14,11 @@ export type AdminNavItem = Readonly<{
   subitems?: AdminNavItem[];
 }>;
 
-export const crmOperationsItems: AdminNavItem[] = [
-  { href: "/admin/asset-drafts", label: "AI Asset Drafts" },
-  { href: "/admin/build-pipeline", label: "AI Asset Build Pipeline" },
-  { href: "/admin/packaging", label: "Packaging Center" },
-  { href: "/admin/opportunities", label: "Buyer Discovery" },
-  { href: "/admin/buyer-interest", label: "Buyer Interest" },
-  { href: "/admin/investor-leads", label: "Investor Leads" },
-  { href: "/admin/business-submissions", label: "Business Intake" },
-  { href: "/admin/underwriting", label: "Underwriting" },
-];
-
 export const adminNavItems: AdminNavItem[] = [
   { href: "/admin", label: "Dashboard" },
-  {
-    label: "CRM / Operations",
-    subitems: crmOperationsItems,
-  },
-  { href: "/admin/digital-assets", label: "Listings" },
+  { href: "/admin/assets", label: "Assets" },
   { href: "/admin/buyers", label: "Buyers" },
-  { href: "/admin/inquiries", label: "Inquiries" },
+  { href: "/admin/deals", label: "Deals" },
+  { href: "/admin/documents", label: "Documents" },
   { href: "/admin/settings", label: "Settings" },
 ];

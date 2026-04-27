@@ -1,111 +1,43 @@
 import Link from "next/link";
 import { AdminPageHeader } from "@/components/admin-page-header";
-import { DealLifecycleCard } from "@/components/deal-lifecycle-card";
 import { PageCard } from "@/components/page-card";
-import { getDealLifecycleRecords, dealLifecycleStageLabel } from "@/lib/deals";
 
 export const dynamic = "force-dynamic";
 
-type AdminDealsPageProps = Readonly<{
-  searchParams?: {
-    stage?: string;
-    archive?: string;
-    buyer_status?: string;
-    seller_status?: string;
-  };
-}>;
-
-const stageOptions = ["all", "opportunity", "interest", "offer", "contract", "transfer", "closeout", "archived"] as const;
-const archiveOptions = ["all", "active", "archived"] as const;
-
-export default async function AdminDealsPage({ searchParams }: AdminDealsPageProps) {
-  const records = await getDealLifecycleRecords();
-  const buyerStatusOptions = ["all", ...new Set(records.map((record) => record.buyer_status_label))];
-  const sellerStatusOptions = ["all", ...new Set(records.map((record) => record.seller_status_label))];
-
-  const selectedStage = stageOptions.includes((searchParams?.stage ?? "all") as (typeof stageOptions)[number])
-    ? (searchParams?.stage ?? "all")
-    : "all";
-  const selectedArchive = archiveOptions.includes((searchParams?.archive ?? "all") as (typeof archiveOptions)[number])
-    ? (searchParams?.archive ?? "all")
-    : "all";
-  const selectedBuyerStatus = searchParams?.buyer_status ?? "all";
-  const selectedSellerStatus = searchParams?.seller_status ?? "all";
-
-  const filteredRecords = records.filter((record) => {
-    if (selectedStage !== "all" && record.stage !== selectedStage) {
-      return false;
-    }
-
-    if (selectedArchive === "active" && record.is_archived) {
-      return false;
-    }
-
-    if (selectedArchive === "archived" && !record.is_archived) {
-      return false;
-    }
-
-    if (selectedBuyerStatus !== "all" && record.buyer_status_label !== selectedBuyerStatus) {
-      return false;
-    }
-
-    if (selectedSellerStatus !== "all" && record.seller_status_label !== selectedSellerStatus) {
-      return false;
-    }
-
-    return true;
-  });
-
+export default async function AdminDealsPage() {
   return (
     <div className="grid gap-6">
       <AdminPageHeader
-        title="Deal Lifecycle"
-        description="Unified admin desk tying packaging, offers, contracts, transfers, closeout, and archive together."
+        title="Deals"
+        description="Track buyer-to-asset deals from NDA through closing."
       />
 
-      <section className="grid gap-4 rounded-[1.75rem] border border-ink-200 bg-[rgba(18,20,23,0.96)] p-6 shadow-soft">
-        <div className="grid gap-3 sm:grid-cols-4">
-          <Metric label="All deals" value={String(records.length)} />
-          <Metric label="Active" value={String(records.filter((record) => !record.is_archived).length)} />
-          <Metric label="Archived" value={String(records.filter((record) => record.is_archived).length)} />
-          <Metric label="Completed" value={String(records.filter((record) => record.is_completed).length)} />
-        </div>
-
-        <form className="grid gap-3 xl:grid-cols-4" method="get">
-          <Field label="Stage" name="stage" value={selectedStage} options={stageOptions.map((value) => ({ value, label: value === "all" ? "All stages" : dealLifecycleStageLabel(value) }))} />
-          <Field label="State" name="archive" value={selectedArchive} options={archiveOptions.map((value) => ({ value, label: value === "all" ? "All records" : value === "active" ? "Active only" : "Archived only" }))} />
-          <Field label="Buyer status" name="buyer_status" value={selectedBuyerStatus} options={buyerStatusOptions.map((value) => ({ value, label: value === "all" ? "All buyer statuses" : value }))} />
-          <Field label="Seller status" name="seller_status" value={selectedSellerStatus} options={sellerStatusOptions.map((value) => ({ value, label: value === "all" ? "All seller statuses" : value }))} />
-          <div className="flex items-end">
-            <button
-              type="submit"
-              className="inline-flex items-center justify-center rounded-full border border-accent-200 bg-[rgba(160, 120, 50, 0.96)] px-5 py-3 text-sm font-semibold text-accent-700 transition hover:border-accent-300 hover:text-accent-600"
-            >
-              Apply filters
-            </button>
-          </div>
-        </form>
+      <section className="grid gap-4 sm:grid-cols-3">
+        <Metric label="Total Deals" value="0" />
+        <Metric label="Active" value="0" />
+        <Metric label="Closed" value="0" />
       </section>
 
-      <PageCard title="Deal queue" description="One row per packaging-anchored lifecycle chain.">
-        {filteredRecords.length > 0 ? (
-          <div className="grid gap-5 xl:grid-cols-2">
-            {filteredRecords.map((record) => (
-              <DealLifecycleCard key={record.id} record={record} href={`/admin/deals/${record.id}`} />
-            ))}
-          </div>
-        ) : (
-          <div className="rounded-[1.5rem] border border-dashed border-ink-200 bg-[rgb(var(--surface))] px-5 py-6 text-sm leading-6 text-ink-600">
-            No deal lifecycle records match the current filters.
-          </div>
-        )}
+      <PageCard title="SourcifyLending Deals" description="Active buyer-to-SourcifyLending connections">
+        <div className="rounded-lg border border-ink-200 bg-ink-50 p-8 text-center">
+          <div className="text-sm text-ink-600">No active deals yet.</div>
+          <Link
+            href="/admin/assets"
+            className="mt-4 inline-block rounded-lg bg-accent-600 px-4 py-2 text-sm font-medium text-white hover:bg-accent-700"
+          >
+            Manage Sale
+          </Link>
+        </div>
       </PageCard>
 
-      <PageCard title="Desk notes" description="Admin-only lifecycle summary.">
-        <div className="grid gap-3 text-sm leading-6 text-ink-700">
-          <div>The desk follows the linked chain from packaging through archive.</div>
-          <div>Portal users only see their own sanitized progress labels.</div>
-          <div>Native detail pages remain the place for edits and workflow actions.</div>
+      <PageCard title="Deal Stages" description="">
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Stage label="NDA Sent" count="0" />
+          <Stage label="NDA Signed" count="0" />
+          <Stage label="Reviewing" count="0" />
+          <Stage label="Offer Stage" count="0" />
+          <Stage label="Contract" count="0" />
+          <Stage label="Closed" count="0" />
         </div>
       </PageCard>
     </div>
@@ -120,38 +52,24 @@ function Metric({
   value: string;
 }>) {
   return (
-    <div className="rounded-2xl border border-ink-200 bg-[rgb(var(--surface))] p-4">
-      <div className="text-[11px] font-semibold tracking-[0.18em] text-ink-500 uppercase">{label}</div>
-      <div className="mt-1 text-2xl font-semibold text-ink-950">{value}</div>
+    <div className="rounded-2xl border border-ink-200 bg-white p-4">
+      <div className="text-xs font-semibold text-ink-500 uppercase">{label}</div>
+      <div className="mt-2 text-2xl font-bold text-ink-900">{value}</div>
     </div>
   );
 }
 
-function Field({
+function Stage({
   label,
-  name,
-  value,
-  options,
+  count,
 }: Readonly<{
   label: string;
-  name: string;
-  value: string;
-  options: ReadonlyArray<{ value: string; label: string }>;
+  count: string | number;
 }>) {
   return (
-    <label className="grid gap-2">
-      <span className="text-[11px] font-semibold tracking-[0.2em] text-ink-500 uppercase">{label}</span>
-      <select
-        name={name}
-        defaultValue={value}
-        className="w-full rounded-2xl border border-ink-200 bg-white px-4 py-3 text-sm text-ink-950 shadow-sm outline-none transition focus:border-accent-400 focus:ring-2 focus:ring-accent-200"
-      >
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
-    </label>
+    <div className="rounded-lg border border-ink-200 bg-white p-4">
+      <div className="text-xs font-semibold text-ink-500 uppercase">{label}</div>
+      <div className="mt-2 text-2xl font-bold text-ink-900">{count}</div>
+    </div>
   );
 }
