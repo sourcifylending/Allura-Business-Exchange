@@ -19,6 +19,7 @@ export function BuyerInterestSection({
   const [showForm, setShowForm] = useState(false);
   const [buyerName, setBuyerName] = useState("");
   const [buyerEmail, setBuyerEmail] = useState("");
+  const [sendingInvite, setSendingInvite] = useState<string | null>(null);
   const [expandedInterestId, setExpandedInterestId] = useState<string | null>(null);
 
   const handleAddInterest = async (e: React.FormEvent) => {
@@ -53,6 +54,35 @@ export function BuyerInterestSection({
   const openDocument = (interestId: string, docType: string) => {
     const url = `/api/admin/documents?type=${docType}&buyerInterestId=${interestId}&assetId=${assetId}`;
     window.open(url, "_blank");
+  };
+
+  const handleSendInvite = async (interestId: string) => {
+    setSendingInvite(interestId);
+    try {
+      const response = await fetch("/api/admin/send-nda-invite", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ buyerId: interestId }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Failed to send invite");
+      }
+
+      setInterests(
+        interests.map((i) =>
+          i.id === interestId
+            ? { ...i, invite_status: "sent" as any }
+            : i
+        )
+      );
+      alert("NDA invite sent successfully!");
+    } catch (error) {
+      alert(`Failed to send invite: ${error instanceof Error ? error.message : "Unknown error"}`);
+    } finally {
+      setSendingInvite(null);
+    }
   };
 
   return (
@@ -151,6 +181,18 @@ export function BuyerInterestSection({
 
                   <div className="grid gap-2">
                     <p className="text-xs font-semibold text-ink-600">QUICK ACTIONS</p>
+                    {interest.nda_status === "not_sent" && interest.invite_status !== "sent" && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleSendInvite(interest.id);
+                        }}
+                        disabled={sendingInvite === interest.id}
+                        className="rounded-lg bg-amber-600 px-3 py-2 text-xs font-medium text-white hover:bg-amber-700 disabled:opacity-50"
+                      >
+                        {sendingInvite === interest.id ? "Sending..." : "📧 Send NDA Invite"}
+                      </button>
+                    )}
                     <button
                       onClick={(e) => {
                         e.stopPropagation();

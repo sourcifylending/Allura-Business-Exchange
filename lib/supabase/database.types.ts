@@ -656,6 +656,16 @@ export type DigitalAssetBuyerInterestRow = RowBase & {
   next_follow_up_date?: string | null;
   buyer_stage?: DigitalAssetBuyerStage | null;
   document_generated_at?: string | null;
+  invite_status?: string | null;
+  invite_sent_at?: string | null;
+  invite_token_hash?: string | null;
+  linked_user_id?: string | null;
+  portal_access_status?: string | null;
+  last_viewed_at?: string | null;
+  nda_signed_name?: string | null;
+  nda_signed_ip?: string | null;
+  nda_signed_user_agent?: string | null;
+  nda_version?: string | null;
 };
 
 export type BuyerOpportunityInteractionRow = RowBase & {
