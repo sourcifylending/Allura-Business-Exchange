@@ -28,17 +28,21 @@ type BuyerInviteRecord = {
   } | null;
 };
 
-async function loadInvite(token: string) {
+type LoadInviteResult =
+  | { error: string }
+  | { record: BuyerInviteRecord };
+
+async function loadInvite(token: string): Promise<LoadInviteResult> {
   const verified = verifyBuyerInviteToken(token);
 
   if (!verified.ok) {
-    return { error: verified.error } as const;
+    return { error: verified.error || "Invalid invite link." };
   }
 
   const client = createAdminClient();
 
   if (!client) {
-    return { error: "Portal access is temporarily unavailable." } as const;
+    return { error: "Portal access is temporarily unavailable." };
   }
 
   const { data, error } = await (client.from("digital_asset_buyer_interest") as any)
@@ -47,10 +51,10 @@ async function loadInvite(token: string) {
     .single();
 
   if (error || !data) {
-    return { error: "Invite record was not found." } as const;
+    return { error: "Invite record was not found." };
   }
 
-  return { record: data as BuyerInviteRecord } as const;
+  return { record: data as BuyerInviteRecord };
 }
 
 export default async function BuyerInvitePage({ searchParams }: BuyerInvitePageProps) {
