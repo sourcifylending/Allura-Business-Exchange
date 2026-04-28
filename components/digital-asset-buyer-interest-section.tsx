@@ -11,11 +11,16 @@ type BuyerInterestSectionProps = Readonly<{
   initialInterests: DigitalAssetBuyerInterestRow[];
 }>;
 
+type BuyerInterestWithInvite = DigitalAssetBuyerInterestRow & {
+  invite_status?: string | null;
+  invite_sent_at?: string | null;
+};
+
 export function BuyerInterestSection({
   assetId,
   initialInterests,
 }: BuyerInterestSectionProps) {
-  const [interests, setInterests] = useState(initialInterests);
+  const [interests, setInterests] = useState<BuyerInterestWithInvite[]>(initialInterests);
   const [showForm, setShowForm] = useState(false);
   const [buyerName, setBuyerName] = useState("");
   const [buyerEmail, setBuyerEmail] = useState("");
@@ -56,7 +61,7 @@ export function BuyerInterestSection({
     window.open(url, "_blank");
   };
 
-  const handleSendInvite = async (interestId: string) => {
+  const handleSendInvite = async (interestId: string, isResend = false) => {
     setSendingInvite(interestId);
     try {
       const response = await fetch("/api/admin/send-nda-invite", {
@@ -73,11 +78,17 @@ export function BuyerInterestSection({
       setInterests(
         interests.map((i) =>
           i.id === interestId
-            ? { ...i, invite_status: "sent" as any }
+            ? {
+                ...i,
+                invite_status: "sent",
+                nda_status: i.nda_status === "not_sent" ? "sent" : i.nda_status,
+                buyer_stage: i.buyer_stage === "new" || !i.buyer_stage ? "nda_sent" : i.buyer_stage,
+                invite_sent_at: new Date().toISOString(),
+              }
             : i
         )
       );
-      alert("NDA invite sent successfully!");
+      alert(isResend ? "NDA invite resent successfully!" : "NDA invite sent successfully!");
     } catch (error) {
       alert(`Failed to send invite: ${error instanceof Error ? error.message : "Unknown error"}`);
     } finally {
@@ -135,111 +146,127 @@ export function BuyerInterestSection({
         )}
 
         <div className="grid gap-2">
-          {interests.map((interest) => (
-            <div
-              key={interest.id}
-              className="rounded-lg border border-ink-200 bg-ink-50/50 p-3 cursor-pointer hover:bg-ink-50 transition"
-              onClick={() =>
-                setExpandedInterestId(expandedInterestId === interest.id ? null : interest.id)
-              }
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-ink-900">{interest.buyer_name}</p>
-                  {interest.buyer_email && (
-                    <p className="text-xs text-ink-600">{interest.buyer_email}</p>
-                  )}
-                  <p className="text-xs text-ink-600 capitalize mt-1">
-                    {interest.status.replace("_", " ")}
-                  </p>
-                </div>
-                <div className="text-right">
-                  <span
-                    className={`inline-block rounded-full px-2 py-1 text-xs font-semibold border ${
-                      interest.nda_status === "not_sent"
-                        ? "bg-gray-50 text-gray-900 border-gray-200"
-                        : interest.nda_status === "sent"
-                          ? "bg-blue-50 text-blue-900 border-blue-200"
-                          : interest.nda_status === "signed"
-                            ? "bg-green-50 text-green-900 border-green-200"
-                            : "bg-red-50 text-red-900 border-red-200"
-                    }`}
-                  >
-                    {interest.nda_status.replace("_", " ")}
-                  </span>
-                </div>
-              </div>
+          {interests.map((interest) => {
+            const hasInviteBeenSent = interest.invite_status === "sent" || interest.nda_status === "sent" || Boolean(interest.invite_sent_at);
+            const canSendInvite = interest.nda_status !== "signed" && interest.nda_status !== "declined";
+            const isResend = hasInviteBeenSent;
 
-              {expandedInterestId === interest.id && (
-                <div className="mt-3 grid gap-2 border-t border-ink-200 pt-3">
-                  <Link
-                    href={`/admin/digital-assets/${assetId}/buyers/${interest.id}`}
-                    className="rounded-lg bg-accent-600 px-3 py-2 text-xs font-medium text-white hover:bg-accent-700 transition text-center"
-                  >
-                    → Open Deal Room
-                  </Link>
+            return (
+              <div
+                key={interest.id}
+                className="rounded-lg border border-ink-200 bg-ink-50/50 p-3 cursor-pointer hover:bg-ink-50 transition"
+                onClick={() =>
+                  setExpandedInterestId(expandedInterestId === interest.id ? null : interest.id)
+                }
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-ink-900">{interest.buyer_name}</p>
+                    {interest.buyer_email && (
+                      <p className="text-xs text-ink-600">{interest.buyer_email}</p>
+                    )}
+                    <p className="text-xs text-ink-600 capitalize mt-1">
+                      {interest.status.replace("_", " ")}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <span
+                      className={`inline-block rounded-full px-2 py-1 text-xs font-semibold border ${
+                        interest.nda_status === "not_sent"
+                          ? "bg-gray-50 text-gray-900 border-gray-200"
+                          : interest.nda_status === "sent"
+                            ? "bg-blue-50 text-blue-900 border-blue-200"
+                            : interest.nda_status === "signed"
+                              ? "bg-green-50 text-green-900 border-green-200"
+                              : "bg-red-50 text-red-900 border-red-200"
+                      }`}
+                    >
+                      {interest.nda_status.replace("_", " ")}
+                    </span>
+                  </div>
+                </div>
 
-                  <div className="grid gap-2">
-                    <p className="text-xs font-semibold text-ink-600">QUICK ACTIONS</p>
-                    {interest.nda_status === "not_sent" && interest.invite_status !== "sent" && (
+                {expandedInterestId === interest.id && (
+                  <div className="mt-3 grid gap-2 border-t border-ink-200 pt-3">
+                    <Link
+                      href={`/admin/digital-assets/${assetId}/buyers/${interest.id}`}
+                      className="rounded-lg bg-accent-600 px-3 py-2 text-xs font-medium text-white hover:bg-accent-700 transition text-center"
+                    >
+                      → Open Deal Room
+                    </Link>
+
+                    <div className="grid gap-2">
+                      <p className="text-xs font-semibold text-ink-600">QUICK ACTIONS</p>
+                      {canSendInvite && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleSendInvite(interest.id, isResend);
+                          }}
+                          disabled={sendingInvite === interest.id}
+                          className={`rounded-lg px-3 py-2 text-xs font-medium text-white disabled:opacity-50 ${
+                            isResend
+                              ? "bg-blue-600 hover:bg-blue-700"
+                              : "bg-amber-600 hover:bg-amber-700"
+                          }`}
+                        >
+                          {sendingInvite === interest.id
+                            ? isResend
+                              ? "Resending..."
+                              : "Sending..."
+                            : isResend
+                              ? "🔁 Resend NDA Invite"
+                              : "📧 Send NDA Invite"}
+                        </button>
+                      )}
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleSendInvite(interest.id);
+                          openDocument(interest.id, "nda");
                         }}
-                        disabled={sendingInvite === interest.id}
-                        className="rounded-lg bg-amber-600 px-3 py-2 text-xs font-medium text-white hover:bg-amber-700 disabled:opacity-50"
+                        className="rounded-lg border border-ink-200 bg-white px-3 py-2 text-xs font-medium text-ink-900 hover:bg-accent-50 hover:border-accent-200 hover:text-accent-700"
                       >
-                        {sendingInvite === interest.id ? "Sending..." : "📧 Send NDA Invite"}
+                        📄 View NDA
                       </button>
-                    )}
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        openDocument(interest.id, "nda");
-                      }}
-                      className="rounded-lg border border-ink-200 bg-white px-3 py-2 text-xs font-medium text-ink-900 hover:bg-accent-50 hover:border-accent-200 hover:text-accent-700"
-                    >
-                      📄 View NDA
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        openDocument(interest.id, "summary");
-                      }}
-                      className="rounded-lg border border-ink-200 bg-white px-3 py-2 text-xs font-medium text-ink-900 hover:bg-accent-50 hover:border-accent-200 hover:text-accent-700"
-                    >
-                      📋 View Summary
-                    </button>
-                  </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openDocument(interest.id, "summary");
+                        }}
+                        className="rounded-lg border border-ink-200 bg-white px-3 py-2 text-xs font-medium text-ink-900 hover:bg-accent-50 hover:border-accent-200 hover:text-accent-700"
+                      >
+                        📋 View Summary
+                      </button>
+                    </div>
 
-                  <div className="grid gap-2">
-                    <p className="text-xs font-semibold text-ink-600">NDA STATUS</p>
-                    <div className="grid grid-cols-2 gap-2">
-                      {(
-                        ["not_sent", "sent", "signed", "declined"] as const
-                      ).map((status) => (
-                        <button
-                          key={status}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleUpdateNDAStatus(interest.id, status);
-                          }}
-                          className={`rounded-lg px-2 py-1 text-xs font-medium border transition ${
-                            interest.nda_status === status
-                              ? "bg-accent-100 border-accent-300 text-accent-900"
-                              : "border-ink-200 bg-white text-ink-600 hover:bg-ink-50"
-                          }`}
-                        >
-                          {status.replace("_", " ")}
-                        </button>
-                      ))}
+                    <div className="grid gap-2">
+                      <p className="text-xs font-semibold text-ink-600">NDA STATUS</p>
+                      <div className="grid grid-cols-2 gap-2">
+                        {(
+                          ["not_sent", "sent", "signed", "declined"] as const
+                        ).map((status) => (
+                          <button
+                            key={status}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleUpdateNDAStatus(interest.id, status);
+                            }}
+                            className={`rounded-lg px-2 py-1 text-xs font-medium border transition ${
+                              interest.nda_status === status
+                                ? "bg-accent-100 border-accent-300 text-accent-900"
+                                : "border-ink-200 bg-white text-ink-600 hover:bg-ink-50"
+                            }`}
+                          >
+                            {status.replace("_", " ")}
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
-            </div>
-          ))}
+                )}
+              </div>
+            );
+          })}
         </div>
 
         {!showForm && (
