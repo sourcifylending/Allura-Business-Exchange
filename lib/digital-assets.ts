@@ -1,4 +1,4 @@
-import { createAdminClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import type {
   DigitalAssetRow,
   DigitalAssetTaskRow,
@@ -7,8 +7,18 @@ import type {
   UpdateRow,
 } from "@/lib/supabase/database.types";
 
-export async function getDigitalAssets() {
+function getRequiredAdminClient() {
   const client = createAdminClient();
+
+  if (!client) {
+    throw new Error("Supabase service role is not configured.");
+  }
+
+  return client;
+}
+
+export async function getDigitalAssets() {
+  const client = getRequiredAdminClient();
   const { data, error } = await (client.from("digital_assets") as any)
     .select("*")
     .order("created_at", { ascending: false });
@@ -18,7 +28,7 @@ export async function getDigitalAssets() {
 }
 
 export async function getDigitalAsset(id: string) {
-  const client = createAdminClient();
+  const client = getRequiredAdminClient();
   const { data, error } = await (client.from("digital_assets") as any)
     .select("*")
     .eq("id", id)
@@ -29,7 +39,7 @@ export async function getDigitalAsset(id: string) {
 }
 
 export async function createDigitalAsset(asset: InsertRow<DigitalAssetRow>) {
-  const client = createAdminClient();
+  const client = getRequiredAdminClient();
   const { data, error } = await (client.from("digital_assets") as any)
     .insert([asset])
     .select()
@@ -40,7 +50,7 @@ export async function createDigitalAsset(asset: InsertRow<DigitalAssetRow>) {
 }
 
 export async function updateDigitalAsset(id: string, updates: UpdateRow<DigitalAssetRow>) {
-  const client = createAdminClient();
+  const client = getRequiredAdminClient();
   const { data, error } = await (client.from("digital_assets") as any)
     .update(updates)
     .eq("id", id)
@@ -52,7 +62,7 @@ export async function updateDigitalAsset(id: string, updates: UpdateRow<DigitalA
 }
 
 export async function getDigitalAssetTasks(assetId: string) {
-  const client = createAdminClient();
+  const client = getRequiredAdminClient();
   const { data, error } = await (client.from("digital_asset_tasks") as any)
     .select("*")
     .eq("digital_asset_id", assetId)
@@ -63,7 +73,7 @@ export async function getDigitalAssetTasks(assetId: string) {
 }
 
 export async function createDigitalAssetTask(task: InsertRow<DigitalAssetTaskRow>) {
-  const client = createAdminClient();
+  const client = getRequiredAdminClient();
   const { data, error } = await (client.from("digital_asset_tasks") as any)
     .insert([task])
     .select()
@@ -74,7 +84,7 @@ export async function createDigitalAssetTask(task: InsertRow<DigitalAssetTaskRow
 }
 
 export async function updateDigitalAssetTask(id: string, updates: UpdateRow<DigitalAssetTaskRow>) {
-  const client = createAdminClient();
+  const client = getRequiredAdminClient();
   const { data, error } = await (client.from("digital_asset_tasks") as any)
     .update(updates)
     .eq("id", id)
@@ -86,14 +96,14 @@ export async function updateDigitalAssetTask(id: string, updates: UpdateRow<Digi
 }
 
 export async function deleteDigitalAssetTask(id: string) {
-  const client = createAdminClient();
+  const client = getRequiredAdminClient();
   const { error } = await (client.from("digital_asset_tasks") as any).delete().eq("id", id);
 
   if (error) throw error;
 }
 
 export async function getDigitalAssetBuyerInterests(assetId: string) {
-  const client = createAdminClient();
+  const client = getRequiredAdminClient();
   const { data, error } = await (client.from("digital_asset_buyer_interest") as any)
     .select("*")
     .eq("digital_asset_id", assetId)
@@ -104,7 +114,7 @@ export async function getDigitalAssetBuyerInterests(assetId: string) {
 }
 
 export async function getBuyerInterestById(id: string) {
-  const client = createAdminClient();
+  const client = getRequiredAdminClient();
   const { data, error } = await (client.from("digital_asset_buyer_interest") as any)
     .select("*")
     .eq("id", id)
@@ -117,7 +127,7 @@ export async function getBuyerInterestById(id: string) {
 export async function createDigitalAssetBuyerInterest(
   interest: InsertRow<DigitalAssetBuyerInterestRow>
 ) {
-  const client = createAdminClient();
+  const client = getRequiredAdminClient();
   const { data, error } = await (client.from("digital_asset_buyer_interest") as any)
     .insert([interest])
     .select()
@@ -131,7 +141,7 @@ export async function updateDigitalAssetBuyerInterest(
   id: string,
   updates: UpdateRow<DigitalAssetBuyerInterestRow>
 ) {
-  const client = createAdminClient();
+  const client = getRequiredAdminClient();
   const { data, error } = await (client.from("digital_asset_buyer_interest") as any)
     .update(updates)
     .eq("id", id)
