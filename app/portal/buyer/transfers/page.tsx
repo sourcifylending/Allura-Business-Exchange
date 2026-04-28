@@ -1,6 +1,7 @@
 import { PageCard } from "@/components/page-card";
 import { PortalShell } from "@/components/portal-shell";
 import { PortalTransferCard } from "@/components/portal-transfer-card";
+import { getBuyerTransferProgressByBuyerApplicationId } from "@/lib/closing-ops";
 import { getBuyerPortalTransfers } from "@/lib/portal-transfers";
 import { portalNavItemsForRole } from "@/lib/portal-navigation";
 import { requireActivatedBuyerPortalAccess } from "@/lib/portal-access";
@@ -9,7 +10,9 @@ export const dynamic = "force-dynamic";
 
 export default async function BuyerTransfersPage() {
   const record = await requireActivatedBuyerPortalAccess();
-  const transfers = await getBuyerPortalTransfers(record.id);
+  const transferProgress = await getBuyerTransferProgressByBuyerApplicationId(record.id);
+  const canSeeTransfers = transferProgress?.payment_status === "payment_received";
+  const transfers = canSeeTransfers ? await getBuyerPortalTransfers(record.id) : [];
 
   return (
     <PortalShell
@@ -25,8 +28,11 @@ export default async function BuyerTransfersPage() {
     >
       <div className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
         <PageCard title="Transfers center" description="Safe transfer progress and closeout readiness only.">
-          {transfers.length > 0 ? (
+          {canSeeTransfers && transferProgress ? (
             <div className="grid gap-4">
+              <div className="rounded-[1.5rem] border border-emerald-200 bg-[rgba(12,35,22,0.06)] px-4 py-3 text-sm leading-6 text-emerald-800">
+                {transferProgress.buyer_visible_status}
+              </div>
               <div className="grid gap-3 sm:grid-cols-3">
                 <Stat label="Transfers" value={transfers.length} />
                 <Stat
@@ -39,19 +45,28 @@ export default async function BuyerTransfersPage() {
                 />
               </div>
               <div className="grid gap-4">
-                {transfers.map((transfer) => (
-                  <PortalTransferCard
-                    key={transfer.id}
-                    record={transfer}
-                    href={`/portal/buyer/transfers/${transfer.id}`}
-                  />
-                ))}
+                {transfers.length > 0 ? (
+                  transfers.map((transfer) => (
+                    <PortalTransferCard
+                      key={transfer.id}
+                      record={transfer}
+                      href={`/portal/buyer/transfers/${transfer.id}`}
+                    />
+                  ))
+                ) : (
+                  <div className="grid gap-3 text-sm leading-6 text-ink-700">
+                    <div>No buyer transfers are linked yet.</div>
+                    <div>The closing desk has not created a downstream transfer record for this buyer.</div>
+                  </div>
+                )}
               </div>
             </div>
           ) : (
             <div className="grid gap-3 text-sm leading-6 text-ink-700">
-              <div>No buyer transfers are linked yet.</div>
-              <div>Transfers appear here when contracts move into closeout readiness.</div>
+              <div>{transferProgress ? transferProgress.buyer_visible_status : "Transfer progress is not available yet."}</div>
+              <div>
+                Transfer details stay hidden until payment is marked received and Allura opens the transfer stage.
+              </div>
             </div>
           )}
         </PageCard>

@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { getBuyerPortalOpportunityById } from "@/lib/buyer-opportunities";
+import { getClosingSummaryByOfferIds } from "@/lib/closing-ops";
 import { requireActivatedBuyerPortalAccess } from "@/lib/portal-access";
 import type {
   AssetPackagingRow,
@@ -87,6 +88,16 @@ export type BuyerOfferAdminRecord = Readonly<BuyerOfferSubmissionRecord & {
   admin_notes: string;
   reviewed_at: string | null;
   reviewed_by: string | null;
+  closing_summary: BuyerOfferClosingSummary | null;
+}>;
+
+export type BuyerOfferClosingSummary = Readonly<{
+  id: string;
+  closing_status: string;
+  buyer_visible_status: string;
+  payment_status: string;
+  purchase_agreement_status: string;
+  transfer_status: string;
 }>;
 
 type SubmissionPayload = Omit<BuyerOfferSubmissionRow, "id" | "created_at" | "updated_at">;
@@ -199,6 +210,7 @@ function mapSubmissionRowToAdminRecord(
   packagingMap: ReadonlyMap<string, AssetPackagingRow>,
   registryMap: ReadonlyMap<string, AssetRegistryRow>,
   offerMap: ReadonlyMap<string, OfferRow>,
+  closingMap: ReadonlyMap<string, BuyerOfferClosingSummary>,
 ): BuyerOfferAdminRecord | null {
   const buyer = buyerMap.get(row.buyer_application_id);
   const submission = mapSubmissionRow(row, packagingMap, registryMap, offerMap);
@@ -214,6 +226,7 @@ function mapSubmissionRowToAdminRecord(
     admin_notes: row.admin_notes,
     reviewed_at: row.reviewed_at,
     reviewed_by: row.reviewed_by,
+    closing_summary: row.offer_record_id ? closingMap.get(row.offer_record_id) ?? null : null,
   };
 }
 
@@ -548,10 +561,18 @@ export async function getAdminBuyerOfferSubmissions(statusFilter: "all" | BuyerO
     const buyers = buyerResult.data as BuyerApplicationRow[];
     const buyerMap = new Map(buyers.map((buyer) => [buyer.id, buyer]));
     const offerMap = await getOfferLookupMap(adminClient, submissions);
+    const closingSummary = new Map<string, BuyerOfferClosingSummary>();
+    const offerIds = [...new Set(submissions.map((row) => row.offer_record_id).filter((value): value is string => Boolean(value)))];
+    if (offerIds.length > 0) {
+      const summaryResult = await getClosingSummaryByOfferIds(offerIds);
+      for (const [offerId, summary] of summaryResult.entries()) {
+        closingSummary.set(offerId, summary);
+      }
+    }
 
     return submissions
       .filter((row) => statusFilter === "all" || row.status === statusFilter)
-      .map((row) => mapSubmissionRowToAdminRecord(row, buyerMap, lookups.packagingMap, lookups.registryMap, offerMap))
+      .map((row) => mapSubmissionRowToAdminRecord(row, buyerMap, lookups.packagingMap, lookups.registryMap, offerMap, closingSummary))
       .filter((record): record is BuyerOfferAdminRecord => Boolean(record));
   } catch {
     return [];
@@ -581,12 +602,17 @@ export async function getAdminBuyerOfferSubmissionById(id: string) {
 
     const buyerMap = new Map((buyerResult.data as BuyerApplicationRow[]).map((buyer) => [buyer.id, buyer]));
     const offerMap = await getOfferLookupMap(adminClient, [submissionResult.data as BuyerOfferSubmissionRow]);
+    const submission = submissionResult.data as BuyerOfferSubmissionRow;
+    const closingSummary = submission.offer_record_id
+      ? await getClosingSummaryByOfferIds([submission.offer_record_id])
+      : new Map<string, BuyerOfferClosingSummary>();
     return mapSubmissionRowToAdminRecord(
-      submissionResult.data as BuyerOfferSubmissionRow,
+      submission,
       buyerMap,
       lookups.packagingMap,
       lookups.registryMap,
       offerMap,
+      closingSummary,
     );
   } catch {
     return null;

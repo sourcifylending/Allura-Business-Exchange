@@ -54,10 +54,14 @@ export default async function AdminDealDetailPage({ params }: AdminDealDetailPag
             ) : (
               <EmptyLink label="Buyer submission" value="No buyer submission linked yet." />
             )}
-            {record.offer_id ? (
-              <ChainLink label="Internal offer" href={`/admin/offers/${record.offer_id}`} value={record.offer_id} />
+            {record.submission_id ? (
+              <ChainLink
+                label="Buyer offer detail"
+                href={`/admin/deals/buyer-offers/${record.submission_id}`}
+                value={record.offer_id ?? record.submission_id}
+              />
             ) : (
-              <EmptyLink label="Internal offer" value="No internal offer linked yet." />
+              <EmptyLink label="Buyer offer detail" value="No buyer offer linked yet." />
             )}
             {record.contract_id ? (
               <ChainLink label="Contract" href={`/admin/contracts/${record.contract_id}`} value={record.contract_record_id ?? record.contract_id} />

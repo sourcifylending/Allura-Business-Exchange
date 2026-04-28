@@ -8,6 +8,7 @@ import {
   portalTransferNextStepLabel,
   portalTransferStatusLabel,
 } from "@/lib/portal-transfers";
+import { getBuyerTransferProgressByBuyerApplicationId } from "@/lib/closing-ops";
 import { getTransferHistoryEvents } from "@/lib/history";
 import { portalNavItemsForRole } from "@/lib/portal-navigation";
 import { requireActivatedBuyerPortalAccess } from "@/lib/portal-access";
@@ -22,6 +23,36 @@ type BuyerTransferDetailPageProps = Readonly<{
 
 export default async function BuyerTransferDetailPage({ params }: BuyerTransferDetailPageProps) {
   const record = await requireActivatedBuyerPortalAccess();
+  const transferProgress = await getBuyerTransferProgressByBuyerApplicationId(record.id);
+  if (transferProgress?.payment_status !== "payment_received") {
+    return (
+      <PortalShell
+        eyebrow="Buyer portal"
+        title="Buyer transfers"
+        description="Controlled transfer visibility for your linked buyer chain."
+        role="buyer"
+        navItems={portalNavItemsForRole("buyer")}
+        accountName={record.applicant_name}
+        accountEmail={record.email}
+        accountType="Buyer portal"
+        status={record.status}
+      >
+        <PageCard title="Transfer locked" description="Transfer details stay hidden until payment is confirmed.">
+          <div className="grid gap-3 text-sm leading-6 text-ink-700">
+            <div>{transferProgress ? transferProgress.buyer_visible_status : "No transfer progress is visible yet."}</div>
+            <div>Return to the buyer portal after payment is marked received.</div>
+            <Link
+              href="/portal/buyer"
+              className="inline-flex items-center justify-center rounded-full border border-ink-200 bg-[rgb(var(--surface))] px-4 py-2 text-sm font-semibold text-ink-700 transition hover:border-accent-300 hover:text-accent-700"
+            >
+              Back to dashboard
+            </Link>
+          </div>
+        </PageCard>
+      </PortalShell>
+    );
+  }
+
   const transfer = await getBuyerPortalTransferById(record.id, params.id);
 
   if (!transfer) {

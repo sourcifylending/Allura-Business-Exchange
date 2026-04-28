@@ -1,118 +1,160 @@
-import { createAdminClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { PageCard } from "@/components/page-card";
+import { PortalShell } from "@/components/portal-shell";
+import { requireBuyerPortalAccess } from "@/lib/portal-access";
+import { getBuyerTransferProgressByBuyerApplicationId } from "@/lib/closing-ops";
+import { portalNavItemsForRole } from "@/lib/portal-navigation";
 
 export const dynamic = "force-dynamic";
 
-export default async function BuyerPortalPage({
-  searchParams,
-}: {
-  searchParams: { token?: string };
-}) {
-  const token = searchParams.token;
+type BuyerPortalPageProps = Readonly<{
+  searchParams?: {
+    error?: string;
+    token?: string;
+  };
+}>;
 
-  if (!token) {
-    return (
-      <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center">
-        <h2 className="text-lg font-semibold text-red-900">Invalid Access</h2>
-        <p className="mt-2 text-sm text-red-700">No invitation token provided.</p>
-      </div>
-    );
+export default async function BuyerPortalPage({ searchParams }: BuyerPortalPageProps) {
+  if (searchParams?.token) {
+    redirect(`/buyer-invite?token=${encodeURIComponent(searchParams.token)}`);
   }
 
-  const client = createAdminClient();
-  const crypto = require("crypto");
-  const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
-
-  const { data: buyer, error } = await (client.from("digital_asset_buyer_interest") as any)
-    .select("*, digital_assets(*)")
-    .eq("invite_token_hash", tokenHash)
-    .single();
-
-  if (error || !buyer) {
-    return (
-      <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center">
-        <h2 className="text-lg font-semibold text-red-900">Access Denied</h2>
-        <p className="mt-2 text-sm text-red-700">Invitation token not found or expired.</p>
-      </div>
-    );
-  }
-
-  // Check if token has expired
-  if (buyer.invite_token_expires_at && new Date(buyer.invite_token_expires_at) < new Date()) {
-    return (
-      <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center">
-        <h2 className="text-lg font-semibold text-red-900">Invitation Expired</h2>
-        <p className="mt-2 text-sm text-red-700">
-          This invitation link has expired. Please request a new invitation from the admin.
-        </p>
-      </div>
-    );
-  }
-
-  const asset = buyer.digital_assets;
-  const ndaSigned = buyer.nda_status === "signed";
+  const record = await requireBuyerPortalAccess();
+  const transferProgress = await getBuyerTransferProgressByBuyerApplicationId(record.id);
+  const canSeeTransferProgress = transferProgress?.payment_status === "payment_received";
 
   return (
-    <div className="space-y-6">
-      <div className="rounded-lg bg-white p-6 shadow-sm">
-        <h1 className="text-2xl font-bold text-ink-900">{asset.name}</h1>
-        <p className="mt-2 text-ink-600">{asset.short_description}</p>
+    <PortalShell
+      eyebrow="Buyer portal"
+      title="Buyer dashboard"
+      description="Controlled access for your linked buyer account."
+      role="buyer"
+      navItems={portalNavItemsForRole("buyer")}
+      accountName={record.applicant_name}
+      accountEmail={record.email}
+      accountType="Buyer portal"
+      status={record.status}
+    >
+      {searchParams?.error ? (
+        <div className="rounded-[1.5rem] border border-rose-200 bg-[rgba(52,18,26,0.96)] px-5 py-4 text-sm font-medium text-rose-700">
+          {searchParams.error}
+        </div>
+      ) : null}
+
+      <div className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
+        <PageCard title="Account status" description="Your buyer record controls what appears in the portal.">
+          <div className="grid gap-3 text-sm leading-6 text-ink-700">
+            <div>Buyer name: {record.applicant_name}</div>
+            <div>Buyer email: {record.email}</div>
+            <div>Application status: {record.status}</div>
+            <div>Proof of funds: {record.proof_of_funds_status}</div>
+            <div>Invited at: {record.invited_at || "Not yet invited"}</div>
+          </div>
+        </PageCard>
+
+        <PageCard title="Next steps" description="Activated accounts can review controlled materials below.">
+          <div className="grid gap-3 text-sm leading-6 text-ink-700">
+            {record.status === "activated" ? (
+              <>
+                <div>Review opportunities that are visible to your account</div>
+                <div>Open documents that have been released to the buyer portal</div>
+                <div>Track requests, offers, contracts, and transfers from the sidebar</div>
+              </>
+            ) : (
+              <>
+                <div>Your portal invite has not been fully activated yet.</div>
+                <div>Open the buyer invite link from your email and sign the NDA to unlock access.</div>
+              </>
+            )}
+          </div>
+        </PageCard>
       </div>
 
-      {!ndaSigned ? (
-        <div className="rounded-lg border-2 border-amber-300 bg-amber-50 p-6">
-          <div className="mb-4">
-            <h2 className="text-lg font-semibold text-amber-900">NDA Required</h2>
-            <p className="mt-2 text-sm text-amber-700">
-              To access materials, you must first review and sign the NDA.
-            </p>
-          </div>
-          <a
-            href={`/portal/buyer/nda?token=${token}`}
-            className="inline-block rounded-lg bg-amber-600 px-6 py-3 text-sm font-semibold text-white hover:bg-amber-700"
-          >
-            Review & Sign NDA
-          </a>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          <div className="rounded-lg border border-green-200 bg-green-50 p-4">
-            <p className="text-sm font-semibold text-green-800">✓ NDA Signed by {buyer.nda_signed_name}</p>
-          </div>
+      <div className="grid gap-6">
+        <PageCard title="Transfer Progress" description="Controlled transfer visibility for your assigned asset.">
+          {canSeeTransferProgress && transferProgress ? (
+            <div className="grid gap-4 text-sm leading-6 text-ink-700">
+              <div className="rounded-[1.5rem] border border-emerald-200 bg-[rgba(12,35,22,0.06)] px-4 py-3 text-emerald-800">
+                {transferProgress.buyer_visible_status}
+              </div>
 
-          <div className="grid gap-4">
-            <div className="rounded-lg border border-ink-200 bg-white p-4">
-              <h3 className="font-semibold text-ink-900">Asset Summary</h3>
-              <dl className="mt-3 space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <dt className="text-ink-600">Type</dt>
-                  <dd className="text-ink-900">{asset.asset_type || "—"}</dd>
+              <div className="grid gap-3">
+                <SectionRow label="Deal Status" value={transferProgress.closing_status.replaceAll("_", " ")} />
+                <SectionRow label="Purchase Agreement Status" value={transferProgress.purchase_agreement_status.replaceAll("_", " ")} />
+                <SectionRow label="Payment Status" value={transferProgress.payment_status.replaceAll("_", " ")} />
+              </div>
+
+              <div className="grid gap-2">
+                <div className="text-[11px] font-semibold tracking-[0.2em] text-ink-500 uppercase">Progress tracker</div>
+                <div className="grid gap-2">
+                  {transferProgress.progress_steps.map((step) => (
+                    <div
+                      key={step.label}
+                      className={[
+                        "rounded-2xl border px-4 py-3 text-sm font-semibold",
+                        step.status === "complete"
+                          ? "border-emerald-200 bg-[rgba(12,35,22,0.06)] text-emerald-800"
+                          : step.status === "current"
+                            ? "border-accent-200 bg-[rgba(160,120,50,0.12)] text-accent-800"
+                            : "border-ink-200 bg-[rgb(var(--surface))] text-ink-600",
+                      ].join(" ")}
+                    >
+                      {step.label}
+                    </div>
+                  ))}
                 </div>
-                <div className="flex justify-between">
-                  <dt className="text-ink-600">Price</dt>
-                  <dd className="text-ink-900">${asset.asking_price?.toLocaleString() || "—"}</dd>
-                </div>
-                <div className="flex justify-between">
-                  <dt className="text-ink-600">Stage</dt>
-                  <dd className="text-ink-900">{asset.revenue_stage || "—"}</dd>
-                </div>
-              </dl>
+              </div>
+
+              <div className="grid gap-3 rounded-[1.5rem] border border-ink-200 bg-[rgb(var(--surface))] p-5">
+                <div className="text-[11px] font-semibold tracking-[0.2em] text-ink-500 uppercase">Next Required Buyer Action</div>
+                <div>{transferProgress.next_required_buyer_action}</div>
+                <div className="text-[11px] font-semibold tracking-[0.2em] text-ink-500 uppercase">Allura Transition Notes</div>
+                <div>{transferProgress.transition_notes}</div>
+              </div>
+
+              <div className="grid gap-3">
+                <div className="text-[11px] font-semibold tracking-[0.2em] text-ink-500 uppercase">Buyer-visible checklist</div>
+                {transferProgress.visible_checklist_items.length > 0 ? (
+                  transferProgress.visible_checklist_items.map((item) => (
+                    <div key={item.id} className="rounded-2xl border border-ink-200 bg-[rgb(var(--surface))] p-4">
+                      <div className="font-semibold text-ink-950">{item.buyer_visible_label}</div>
+                      <div className="mt-1 text-ink-600">Status: {item.status.replaceAll("_", " ")}</div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="rounded-2xl border border-dashed border-ink-200 bg-[rgb(var(--surface))] p-4 text-ink-600">
+                    Buyer-visible transfer checklist items will appear when Allura releases them.
+                  </div>
+                )}
+              </div>
             </div>
-
-            <div className="rounded-lg border border-ink-200 bg-white p-4">
-              <h3 className="font-semibold text-ink-900">Materials</h3>
-              <p className="mt-2 text-sm text-ink-600">
-                Full presentation, financial data, and deal room access are available after NDA signature.
-              </p>
+          ) : (
+            <div className="grid gap-3 text-sm leading-6 text-ink-700">
+              <div>
+                {transferProgress
+                  ? transferProgress.buyer_visible_status
+                  : "Your transfer progress will appear here once Allura creates the closing record."}
+              </div>
+              <div>{transferProgress ? "Payment confirmation is required before transfer progress is shown." : "No transfer steps are visible yet."}</div>
             </div>
-          </div>
-        </div>
-      )}
-
-      <div className="text-center text-xs text-ink-500">
-        <p>Portal Access ID: {buyer.id}</p>
-        <p>Buyer: {buyer.buyer_email}</p>
+          )}
+        </PageCard>
       </div>
+    </PortalShell>
+  );
+}
+
+function SectionRow({
+  label,
+  value,
+}: Readonly<{
+  label: string;
+  value: string;
+}>) {
+  return (
+    <div className="rounded-2xl border border-ink-200 bg-[rgb(var(--surface))] p-4">
+      <div className="text-[11px] font-semibold tracking-[0.18em] text-ink-500 uppercase">{label}</div>
+      <div className="mt-1 text-sm leading-6 text-ink-800">{value}</div>
     </div>
   );
 }

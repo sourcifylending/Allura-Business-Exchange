@@ -121,6 +121,32 @@ export type DigitalAssetBuyerInterestStatus = "new" | "contacted" | "interested"
 export type DigitalAssetBuyerInterestNDAStatus = "not_sent" | "sent" | "signed" | "declined";
 export type DigitalAssetBuyerInterestProofOfFundsStatus = "not_requested" | "requested" | "submitted" | "verified" | "rejected";
 export type DigitalAssetBuyerStage = "new" | "nda_sent" | "nda_signed" | "reviewing" | "offer" | "closed" | "dead";
+export type AssetClosingStatus =
+  | "offer_accepted"
+  | "pa_sent"
+  | "pa_signed"
+  | "awaiting_payment"
+  | "payment_received"
+  | "transfer_in_progress"
+  | "buyer_reviewing_transfer"
+  | "transfer_complete"
+  | "closed"
+  | "cancelled";
+export type AssetClosingPurchaseAgreementStatus = "not_sent" | "sent" | "signed" | "cancelled";
+export type AssetClosingPaymentStatus =
+  | "not_requested"
+  | "invoice_sent"
+  | "awaiting_payment"
+  | "payment_received"
+  | "payment_failed"
+  | "refunded";
+export type AssetClosingTransferStatus = "not_started" | "preparing" | "in_progress" | "waiting_on_buyer" | "complete";
+export type AssetTransferChecklistItemStatus =
+  | "not_started"
+  | "in_progress"
+  | "waiting_on_buyer"
+  | "complete"
+  | "blocked";
 
 type Timestamp = string;
 
@@ -659,6 +685,7 @@ export type DigitalAssetBuyerInterestRow = RowBase & {
   invite_status?: string | null;
   invite_sent_at?: string | null;
   invite_token_hash?: string | null;
+  invite_token_expires_at?: string | null;
   linked_user_id?: string | null;
   portal_access_status?: string | null;
   last_viewed_at?: string | null;
@@ -666,6 +693,36 @@ export type DigitalAssetBuyerInterestRow = RowBase & {
   nda_signed_ip?: string | null;
   nda_signed_user_agent?: string | null;
   nda_version?: string | null;
+};
+
+export type AssetClosingRow = RowBase & {
+  digital_asset_id: string;
+  buyer_interest_id: string;
+  buyer_application_id?: string | null;
+  buyer_offer_submission_id?: string | null;
+  offer_id?: string | null;
+  contract_row_id?: string | null;
+  transfer_row_id?: string | null;
+  asset_packaging_id?: string | null;
+  asset_registry_id?: string | null;
+  accepted_offer_amount?: string | null;
+  closing_status: AssetClosingStatus;
+  purchase_agreement_status: AssetClosingPurchaseAgreementStatus;
+  payment_status: AssetClosingPaymentStatus;
+  transfer_status: AssetClosingTransferStatus;
+  buyer_visible_status: string;
+  internal_notes: string;
+};
+
+export type AssetTransferChecklistItemRow = RowBase & {
+  asset_closing_id: string;
+  label: string;
+  status: AssetTransferChecklistItemStatus;
+  is_buyer_visible: boolean;
+  buyer_visible_label: string;
+  internal_notes: string;
+  completed_at?: string | null;
+  sort_order: number;
 };
 
 export type BuyerOpportunityInteractionRow = RowBase & {
@@ -881,6 +938,16 @@ export type Database = {
         Row: DigitalAssetBuyerInterestRow;
         Insert: InsertRow<DigitalAssetBuyerInterestRow>;
         Update: UpdateRow<DigitalAssetBuyerInterestRow>;
+      };
+      asset_closings: {
+        Row: AssetClosingRow;
+        Insert: InsertRow<AssetClosingRow>;
+        Update: UpdateRow<AssetClosingRow>;
+      };
+      asset_transfer_checklist_items: {
+        Row: AssetTransferChecklistItemRow;
+        Insert: InsertRow<AssetTransferChecklistItemRow>;
+        Update: UpdateRow<AssetTransferChecklistItemRow>;
       };
     };
   };

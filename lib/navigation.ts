@@ -21,19 +21,8 @@ export const adminNavItems: AdminNavItem[] = [
     label: "Assets",
     href: "/admin/assets",
     subitems: [
-      { href: "/admin/asset-drafts", label: "Draft Assets" },
+      { href: "/admin/assets/new", label: "Add Asset" },
       { href: "/admin/digital-assets", label: "Digital Assets" },
-      { href: "/admin/packaging", label: "Asset Packaging" },
-    ],
-  },
-
-  {
-    label: "CRM",
-    href: "/admin/crm",
-    subitems: [
-      { href: "/admin/inquiries", label: "Leads & Inquiries" },
-      { href: "/admin/buyer-interest", label: "Buyer Interest" },
-      { href: "/admin/opportunities", label: "Opportunity Mapping" },
     ],
   },
 
@@ -41,55 +30,23 @@ export const adminNavItems: AdminNavItem[] = [
     label: "Buyers",
     href: "/admin/buyers",
     subitems: [
-      { href: "/admin/buyer-offers", label: "Buyer Offers" },
-      { href: "/admin/applications", label: "Applications & Review" },
-      { href: "/admin/requests", label: "Portal Requests" },
+      { href: "/admin/buyers/new", label: "Add Buyer" },
+      { href: "/admin/buyer-interest", label: "Buyer Interest" },
     ],
   },
-
-  { href: "/admin/sellers", label: "Sellers" },
 
   {
     label: "Deals",
     href: "/admin/deals",
     subitems: [
-      { href: "/admin/deal-room", label: "Deal Room" },
-      { href: "/admin/offers", label: "All Offers" },
-      { href: "/admin/contracts", label: "Contracts" },
-      { href: "/admin/closeout", label: "Closeout" },
-      { href: "/admin/risk", label: "Risk Desk" },
+      { href: "/admin/deals/buyer-offers", label: "Buyer Offers" },
+      { href: "/admin/deals/closing-desk", label: "Closing Desk" },
+      { href: "/admin/requests", label: "Portal Requests" },
     ],
   },
 
   {
-    label: "NDAs",
-    href: "/admin/nda-management",
-    subitems: [
-      { href: "/admin/nda-templates", label: "NDA Templates" },
-      { href: "/admin/nda-signatures", label: "NDA Signatures" },
-    ],
+    label: "Documents",
+    href: "/admin/documents",
   },
-
-  {
-    label: "Diligence",
-    href: "/admin/diligence",
-    subitems: [
-      { href: "/admin/underwriting", label: "Underwriting" },
-      { href: "/admin/transfers", label: "Transfers" },
-      { href: "/admin/reporting", label: "Reporting" },
-    ],
-  },
-
-  { href: "/admin/documents", label: "Documents" },
-
-  {
-    label: "Messages",
-    href: "/admin/messages",
-    subitems: [
-      { href: "/admin/market-radar", label: "Market Radar" },
-      { href: "/admin/activity", label: "Activity Log" },
-    ],
-  },
-
-  { href: "/admin/settings", label: "Settings" },
 ];

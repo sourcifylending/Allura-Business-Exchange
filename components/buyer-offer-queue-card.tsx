@@ -13,6 +13,8 @@ export function BuyerOfferQueueCard({
 }: Readonly<{
   record: BuyerOfferAdminRecord;
 }>) {
+  const closingSummary = record.closing_summary;
+
   return (
     <article className="grid gap-4 rounded-[1.5rem] border border-ink-200 bg-[rgba(18,20,23,0.96)] p-5 shadow-soft">
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -23,6 +25,7 @@ export function BuyerOfferQueueCard({
         <div className="grid justify-items-end gap-2">
           <BuyerOfferStatusPill status={record.status} />
           <OfferDispositionPill status={record.offer_disposition_status} />
+          {closingSummary ? <ClosingPill label={closingSummary.closing_status.replaceAll("_", " ")} /> : null}
         </div>
       </div>
 
@@ -34,6 +37,7 @@ export function BuyerOfferQueueCard({
         <Info label="Financing" value={record.financing_plan} />
         <Info label="Status" value={record.status.replaceAll("_", " ")} />
         <Info label="Buyer-visible" value={record.buyer_visible_status} />
+        <Info label="Closing" value={closingSummary?.buyer_visible_status ?? "No closing opened yet"} />
       </div>
 
       <div className="rounded-2xl border border-ink-200 bg-[rgb(var(--surface))] p-4 text-sm leading-6 text-ink-700">
@@ -86,11 +90,19 @@ export function BuyerOfferQueueCard({
 
       <div className="flex flex-wrap items-center gap-3">
         <Link
-          href={`/admin/buyer-offers/${record.id}`}
+          href={`/admin/deals/buyer-offers/${record.id}`}
           className="rounded-full border border-accent-200 bg-[rgba(160, 120, 50, 0.96)] px-4 py-2 text-sm font-semibold text-accent-700 transition hover:border-accent-300 hover:text-accent-600"
         >
           Open detail
         </Link>
+        {closingSummary ? (
+          <Link
+            href={`/admin/deals/closing-desk/${closingSummary.id}`}
+            className="rounded-full border border-emerald-200 bg-[rgba(12,35,22,0.96)] px-4 py-2 text-sm font-semibold text-emerald-700 transition hover:border-emerald-300 hover:text-emerald-600"
+          >
+            Open closing desk
+          </Link>
+        ) : null}
         <Link
           href={`/portal/buyer/opportunities/${record.asset_packaging_id}`}
           className="rounded-full border border-ink-200 bg-[rgb(var(--surface))] px-4 py-2 text-sm font-semibold text-ink-700 transition hover:border-accent-300 hover:text-accent-700"
@@ -105,6 +117,18 @@ export function BuyerOfferQueueCard({
         </Link>
       </div>
     </article>
+  );
+}
+
+function ClosingPill({
+  label,
+}: Readonly<{
+  label: string;
+}>) {
+  return (
+    <span className="rounded-full border border-emerald-200 bg-[rgba(12,35,22,0.96)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-700">
+      Closing {label}
+    </span>
   );
 }
 
