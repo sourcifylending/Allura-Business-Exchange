@@ -9,12 +9,16 @@ function isPortalPath(pathname: string) {
   return pathname === "/portal" || pathname.startsWith("/portal/");
 }
 
+function isBuyerInvitePath(pathname: string) {
+  return pathname === "/buyer-invite" || pathname.startsWith("/buyer-invite/");
+}
+
 function isAdminPath(pathname: string) {
   return pathname === "/admin" || pathname.startsWith("/admin/");
 }
 
 function isAppPath(pathname: string) {
-  return pathname === "/login" || pathname === "/auth/callback" || isPortalPath(pathname);
+  return pathname === "/login" || pathname === "/auth/callback" || isPortalPath(pathname) || isBuyerInvitePath(pathname);
 }
 
 function getRequestHostname(request: NextRequest) {
@@ -25,7 +29,7 @@ function getRequestHostname(request: NextRequest) {
 }
 
 function redirectToAppHost(request: NextRequest, pathname: string) {
-  const destination = new URL(pathname, `https://${getAppHostname()}`);
+  const destination = new URL(pathname + request.nextUrl.search, `https://${getAppHostname()}`);
   return NextResponse.redirect(destination);
 }
 
@@ -45,7 +49,7 @@ export async function middleware(request: NextRequest) {
     if (pathname === "/login") {
       return redirectToAppHost(request, "/login");
     }
-    if (isPortalPath(pathname)) {
+    if (isPortalPath(pathname) || isBuyerInvitePath(pathname)) {
       return redirectToAppHost(request, pathname);
     }
     if (isAdminPath(pathname)) {
@@ -58,7 +62,7 @@ export async function middleware(request: NextRequest) {
   // Admin subdomain
   if (isAdminHost) {
     // Redirect portal paths to app host (admins don't access portal)
-    if (isPortalPath(pathname)) {
+    if (isPortalPath(pathname) || isBuyerInvitePath(pathname)) {
       return redirectToAppHost(request, pathname);
     }
 
@@ -104,6 +108,11 @@ export async function middleware(request: NextRequest) {
     // Redirect admin paths to admin host
     if (isAdminPath(pathname)) {
       return redirectToAdminHost(request, pathname);
+    }
+
+    // Buyer invite is token-gated and must not require password login.
+    if (isBuyerInvitePath(pathname)) {
+      return NextResponse.next();
     }
 
     const { claims, response } = await updateSession(request);
