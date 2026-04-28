@@ -2,7 +2,11 @@
   "permissions": {
     "allow": [
       "Bash(npm run *)",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "mcp__0290e6a1-6e06-4372-bf64-c08fcc8df477__get_deployment",
+      "mcp__0290e6a1-6e06-4372-bf64-c08fcc8df477__list_deployments"
     ]
   }
 }

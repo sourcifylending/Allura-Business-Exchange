@@ -18,9 +18,9 @@ export const adminNavItems: AdminNavItem[] = [
   { href: "/admin", label: "Dashboard" },
 
   {
-    label: "Asset Management",
+    label: "Assets",
+    href: "/admin/assets",
     subitems: [
-      { href: "/admin/assets", label: "All Assets" },
       { href: "/admin/asset-drafts", label: "Draft Assets" },
       { href: "/admin/digital-assets", label: "Digital Assets" },
       { href: "/admin/packaging", label: "Asset Packaging" },
@@ -28,58 +28,68 @@ export const adminNavItems: AdminNavItem[] = [
   },
 
   {
-    label: "Buyer Operations",
+    label: "CRM",
+    href: "/admin/crm",
     subitems: [
-      { href: "/admin/buyers", label: "Buyers" },
+      { href: "/admin/inquiries", label: "Leads & Inquiries" },
       { href: "/admin/buyer-interest", label: "Buyer Interest" },
-      { href: "/admin/buyer-offers", label: "Buyer Offers" },
-      { href: "/admin/applications", label: "Applications" },
-      { href: "/admin/opportunities", label: "Opportunities" },
+      { href: "/admin/opportunities", label: "Opportunity Mapping" },
     ],
   },
 
   {
-    label: "Deals & Contracts",
+    label: "Buyers",
+    href: "/admin/buyers",
     subitems: [
-      { href: "/admin/deals", label: "Deals" },
+      { href: "/admin/buyer-offers", label: "Buyer Offers" },
+      { href: "/admin/applications", label: "Applications & Review" },
+      { href: "/admin/requests", label: "Portal Requests" },
+    ],
+  },
+
+  { href: "/admin/sellers", label: "Sellers" },
+
+  {
+    label: "Deals",
+    href: "/admin/deals",
+    subitems: [
       { href: "/admin/deal-room", label: "Deal Room" },
       { href: "/admin/offers", label: "All Offers" },
       { href: "/admin/contracts", label: "Contracts" },
       { href: "/admin/closeout", label: "Closeout" },
-    ],
-  },
-
-  {
-    label: "Operations",
-    subitems: [
-      { href: "/admin/inquiries", label: "Inquiries" },
-      { href: "/admin/requests", label: "Portal Requests" },
-      { href: "/admin/transfers", label: "Transfers" },
-      { href: "/admin/underwriting", label: "Underwriting" },
-    ],
-  },
-
-  {
-    label: "CRM Hub",
-    href: "/admin/crm",
-    subitems: [
-      { href: "/admin/inquiries", label: "Leads & Inquiries" },
-      { href: "/admin/buyers", label: "Buyer Management" },
-      { href: "/admin/applications", label: "Applications & Review" },
-    ],
-  },
-
-  {
-    label: "Market & Insights",
-    subitems: [
-      { href: "/admin/market-radar", label: "Market Radar" },
       { href: "/admin/risk", label: "Risk Desk" },
+    ],
+  },
+
+  {
+    label: "NDAs",
+    href: "/admin/nda-management",
+    subitems: [
+      { href: "/admin/nda-templates", label: "NDA Templates" },
+      { href: "/admin/nda-signatures", label: "NDA Signatures" },
+    ],
+  },
+
+  {
+    label: "Diligence",
+    href: "/admin/diligence",
+    subitems: [
+      { href: "/admin/underwriting", label: "Underwriting" },
+      { href: "/admin/transfers", label: "Transfers" },
       { href: "/admin/reporting", label: "Reporting" },
-      { href: "/admin/activity", label: "Activity Log" },
     ],
   },
 
   { href: "/admin/documents", label: "Documents" },
+
+  {
+    label: "Messages",
+    href: "/admin/messages",
+    subitems: [
+      { href: "/admin/market-radar", label: "Market Radar" },
+      { href: "/admin/activity", label: "Activity Log" },
+    ],
+  },
 
   { href: "/admin/settings", label: "Settings" },
 ];
