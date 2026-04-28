@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import type { ReactNode } from "react";
 import { Logo } from "@/components/logo";
@@ -14,7 +14,9 @@ export function AdminShell({
   children: ReactNode;
 }>) {
   const pathname = usePathname();
+  const router = useRouter();
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
+  const [loggingOut, setLoggingOut] = useState(false);
 
   const toggleSection = (label: string) => {
     const newExpanded = new Set(expandedSections);
@@ -24,6 +26,16 @@ export function AdminShell({
       newExpanded.add(label);
     }
     setExpandedSections(newExpanded);
+  };
+
+  const handleLogout = async () => {
+    setLoggingOut(true);
+    try {
+      await fetch("/api/admin/logout", { method: "POST" });
+    } finally {
+      router.replace("/login");
+      router.refresh();
+    }
   };
 
   const isItemActive = (item: AdminNavItem): boolean => {
@@ -102,23 +114,21 @@ export function AdminShell({
       <div className="mx-auto grid min-h-screen max-w-7xl gap-6 px-4 py-4 lg:grid-cols-[290px_1fr] lg:px-6">
         <aside className="rounded-[1.75rem] border border-ink-200 bg-[rgba(18,20,23,0.96)] p-5 shadow-soft backdrop-blur-xl">
           <Link href="/" className="mb-8 block">
-            <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-2xl border border-ink-200 bg-[rgb(var(--surface))]">
-                <Logo variant="symbol" className="h-6 w-6 object-contain" priority alt="Allura" />
-              </div>
-              <div>
-                <div className="text-xs font-semibold tracking-[0.28em] text-accent-700 uppercase">
-                  Allura Admin
-                </div>
-                <div className="mt-1 text-lg font-semibold text-ink-950">Exchange OS</div>
-              </div>
-            </div>
+            <Logo variant="full" />
           </Link>
-          <nav className="max-h-[calc(100vh-12rem)] space-y-1 overflow-y-auto pr-1">
+          <nav className="max-h-[calc(100vh-15rem)] space-y-1 overflow-y-auto pr-1">
             {adminNavItems.map((item) => renderNavItem(item))}
           </nav>
-          <div className="mt-8 rounded-3xl border border-dashed border-ink-200 bg-[rgb(var(--surface))] p-4 text-sm leading-6 text-ink-600">
-            Simplified admin portal with CRM / Operations consolidation.
+          <div className="mt-8 grid gap-3 rounded-3xl border border-dashed border-ink-200 bg-[rgb(var(--surface))] p-4 text-sm leading-6 text-ink-600">
+            <div>Simplified admin portal with CRM / Operations consolidation.</div>
+            <button
+              type="button"
+              onClick={handleLogout}
+              disabled={loggingOut}
+              className="rounded-2xl border border-red-300 bg-red-50 px-4 py-2 text-sm font-semibold text-red-800 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {loggingOut ? "Logging out..." : "Log out"}
+            </button>
           </div>
         </aside>
         <div className="flex flex-col gap-6">
