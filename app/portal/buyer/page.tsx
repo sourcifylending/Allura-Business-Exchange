@@ -37,6 +37,18 @@ export default async function BuyerPortalPage({
     );
   }
 
+  // Check if token has expired
+  if (buyer.invite_token_expires_at && new Date(buyer.invite_token_expires_at) < new Date()) {
+    return (
+      <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center">
+        <h2 className="text-lg font-semibold text-red-900">Invitation Expired</h2>
+        <p className="mt-2 text-sm text-red-700">
+          This invitation link has expired. Please request a new invitation from the admin.
+        </p>
+      </div>
+    );
+  }
+
   const asset = buyer.digital_assets;
   const ndaSigned = buyer.nda_status === "signed";
 

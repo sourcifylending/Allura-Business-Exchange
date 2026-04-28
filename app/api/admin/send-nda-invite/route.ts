@@ -74,11 +74,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 7);
+
     const updateResult = await (client.from("digital_asset_buyer_interest") as any)
       .update({
         invite_status: "sent",
         invite_sent_at: new Date().toISOString(),
         invite_token_hash: inviteTokenHash,
+        invite_token_expires_at: expiresAt.toISOString(),
       })
       .eq("id", buyerId);
 

@@ -2,9 +2,39 @@ import Link from "next/link";
 import { OpportunityGrid } from "@/components/opportunity-grid";
 import { PageCard } from "@/components/page-card";
 import { SiteShell } from "@/components/site-shell";
-import { aiAssetOpportunities } from "@/lib/opportunities";
+import { createClient } from "@/lib/supabase/server";
+import type { DigitalAssetRow } from "@/lib/supabase/database.types";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const supabase = createClient();
+
+  // Fetch public digital assets from database
+  const { data: publicAssets } = await supabase
+    .from("digital_assets")
+    .select("id, name, asking_price, short_description, visibility, asset_type")
+    .eq("visibility", "public")
+    .eq("status", "for_sale")
+    .limit(6) as unknown as { data: DigitalAssetRow[] | null };
+
+  // Convert database assets to opportunity format for display
+  const aiAssetOpportunities = (publicAssets || [])
+    .filter((asset: DigitalAssetRow) => asset.asset_type === "ai")
+    .map((asset) => ({
+      listing_type: "ai_asset" as const,
+      visibility_mode: "fully_public" as const,
+      title_public: asset.name,
+      title_private: asset.name,
+      brand_name: asset.name,
+      short_description: asset.short_description || "AI asset for sale",
+      asking_price: asset.asking_price ? `$${asset.asking_price.toLocaleString()}` : "Contact for pricing",
+      price_range: "",
+      status: "live" as const,
+      cover_image: "Asset preview",
+      region: "Remote",
+      category: "AI Tool",
+      nda_required: false,
+      published: true,
+    }));
   return (
     <SiteShell
       eyebrow="Private Exchange"
