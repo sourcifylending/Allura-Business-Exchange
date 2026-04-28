@@ -19,7 +19,7 @@ export default function AddBuyerPage() {
     buyerPhone: "",
     assetId: "",
     ndaStatus: "not_sent" as "not_sent" | "sent" | "signed" | "declined",
-    buyerStage: "new" as "new" | "contacted" | "interested" | "qualified" | "not_fit" | "closed",
+    buyerStage: "new" as "new" | "nda_sent" | "nda_signed" | "reviewing" | "offer" | "closed" | "dead",
     nextFollowUpDate: "",
     notes: "",
   });
@@ -30,15 +30,20 @@ export default function AddBuyerPage() {
 
   const loadAssets = async () => {
     try {
-      const response = await fetch("/api/admin/data");
+      const response = await fetch("/api/admin/data", { cache: "no-store" });
       const data = await response.json();
-      const forSaleAssets = data.assets.filter((a: any) => a.status === "for_sale");
-      setAssets(forSaleAssets);
-      if (forSaleAssets.length > 0 && !formData.assetId) {
-        setFormData(prev => ({ ...prev, assetId: forSaleAssets[0].id }));
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to load assets");
+      }
+
+      const realAssets = Array.isArray(data.assets) ? data.assets : [];
+      setAssets(realAssets);
+      if (realAssets.length > 0) {
+        setFormData(prev => ({ ...prev, assetId: prev.assetId || realAssets[0].id }));
       }
     } catch (err) {
-      setError("Failed to load assets");
+      setError(err instanceof Error ? err.message : "Failed to load assets");
     } finally {
       setLoadingAssets(false);
     }
@@ -61,7 +66,7 @@ export default function AddBuyerPage() {
         throw new Error("Buyer name is required");
       }
       if (!formData.assetId) {
-        throw new Error("Please select an asset");
+        throw new Error("Please add or select an asset before creating a buyer");
       }
 
       const response = await fetch("/api/admin/buyers", {
@@ -92,6 +97,8 @@ export default function AddBuyerPage() {
     }
   };
 
+  const hasAssets = assets.length > 0;
+
   return (
     <div className="grid gap-6">
       <AdminPageHeader
@@ -109,22 +116,33 @@ export default function AddBuyerPage() {
               onChange={handleInputChange}
               className="rounded-lg border border-ink-200 bg-white px-3 py-2 text-sm focus:outline-none focus:border-accent-500"
               required
+              disabled={loadingAssets || !hasAssets}
             >
               {loadingAssets ? (
-                <option>Loading assets...</option>
-              ) : assets.length === 0 ? (
-                <option>No assets available</option>
+                <option value="">Loading assets...</option>
+              ) : !hasAssets ? (
+                <option value="">No assets available</option>
               ) : (
                 <>
                   <option value="">Select an asset...</option>
                   {assets.map(asset => (
                     <option key={asset.id} value={asset.id}>
-                      {asset.name} ${asset.asking_price ? asset.asking_price.toLocaleString() : "—"}
+                      {asset.name} {asset.asking_price ? `$${asset.asking_price.toLocaleString()}` : ""}
                     </option>
                   ))}
                 </>
               )}
             </select>
+            {!loadingAssets && !hasAssets ? (
+              <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
+                No assets are available yet. Create SourcifyLending or another asset first.
+                <div className="mt-2">
+                  <Link href="/admin/assets/new" className="font-semibold text-amber-950 underline">
+                    Add Asset
+                  </Link>
+                </div>
+              </div>
+            ) : null}
           </div>
 
           <div className="grid gap-2">
@@ -191,11 +209,12 @@ export default function AddBuyerPage() {
                 className="rounded-lg border border-ink-200 bg-white px-3 py-2 text-sm focus:outline-none focus:border-accent-500"
               >
                 <option value="new">New Lead</option>
-                <option value="contacted">Contacted</option>
-                <option value="interested">Interested</option>
-                <option value="qualified">Qualified</option>
-                <option value="not_fit">Not Fit</option>
+                <option value="nda_sent">NDA Sent</option>
+                <option value="nda_signed">NDA Signed</option>
+                <option value="reviewing">Reviewing</option>
+                <option value="offer">Offer</option>
                 <option value="closed">Closed</option>
+                <option value="dead">Dead</option>
               </select>
             </div>
           </div>
@@ -232,7 +251,7 @@ export default function AddBuyerPage() {
           <div className="flex gap-3 pt-2">
             <button
               type="submit"
-              disabled={loading || loadingAssets}
+              disabled={loading || loadingAssets || !hasAssets}
               className="rounded-lg bg-accent-600 px-4 py-2 text-sm font-semibold text-white hover:bg-accent-700 disabled:opacity-50 transition"
             >
               {loading ? "Creating..." : "Create Buyer"}
