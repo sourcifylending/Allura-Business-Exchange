@@ -161,15 +161,15 @@ export default async function BuyerInvitePage({ searchParams }: BuyerInvitePageP
               ) : null}
 
               {isSourcify ? (
-                <div className="rounded-2xl border border-ink-200 bg-[rgb(var(--surface))] p-4">
-                  <div className="text-xs font-semibold tracking-[0.18em] text-ink-500 uppercase">Presentation</div>
-                  <h2 className="mt-1 text-lg font-semibold text-ink-950">SourcifyLending Asset Sale Presentation</h2>
-                  <div className="mt-4 grid gap-3">
+                <div className="rounded-2xl border border-accent-400/40 bg-[rgba(10,11,13,0.96)] p-4 sm:p-5">
+                  <div className="text-xs font-bold tracking-[0.18em] text-accent-300 uppercase">Presentation</div>
+                  <h2 className="mt-2 text-2xl font-bold leading-tight text-white">SourcifyLending Asset Sale Presentation</h2>
+                  <div className="mt-5 grid gap-4">
                     {SOURCIFY_SLIDES.map((slide, index) => (
-                      <div key={slide.title} className="rounded-2xl border border-ink-200 bg-[rgba(17,19,22,0.92)] p-4 text-white">
-                        <div className="text-xs font-semibold tracking-[0.18em] text-accent-300 uppercase">Slide {index + 1}</div>
-                        <h3 className="mt-2 text-lg font-semibold">{slide.title}</h3>
-                        <p className="mt-2 text-sm leading-6 text-ink-300">{slide.body}</p>
+                      <div key={slide.title} className="rounded-2xl border border-accent-400/25 bg-[#101318] p-5 shadow-lg">
+                        <div className="text-xs font-bold tracking-[0.22em] text-accent-300 uppercase">Slide {index + 1}</div>
+                        <h3 className="mt-3 text-xl font-bold leading-snug text-white">{slide.title}</h3>
+                        <p className="mt-3 text-base font-medium leading-7 text-white/90">{slide.body}</p>
                       </div>
                     ))}
                   </div>
