@@ -28,74 +28,12 @@ export type DealRoomRecord = Readonly<{
   document_status: DocumentStatus;
 }>;
 
-export const dealRoomRecords: DealRoomRecord[] = [
-  {
-    id: "deal-01",
-    opportunity_name: "ReplyPilot",
-    listing_type: "ai_asset",
-    visibility_mode: "approved_only",
-    approved_viewer: "Jordan Lee",
-    access_status: "approved",
-    nda_required_status: "not_required",
-    approval_status: "approved",
-    summary_section: "Approved access for a branded AI asset with clear transfer readiness.",
-    documents_section: ["Asset summary", "Demo notes", "Transfer checklist draft"],
-    notes_qna_placeholder: "Buyer asks about support scope and transfer timing.",
-    timeline_milestones: [
-      { label: "Access approved", status: "complete" },
-      { label: "Docs shared", status: "ready" },
-      { label: "Q&A open", status: "active" },
-      { label: "Transfer prep", status: "waiting" },
-    ],
-    transfer_or_diligence_status: "Transfer prep in progress",
-    next_action: "Answer final questions and unlock next review step",
-    document_status: "available",
-  },
-  {
-    id: "deal-02",
-    opportunity_name: "North Shore Home Services LLC",
-    listing_type: "business",
-    visibility_mode: "approved_only",
-    approved_viewer: "Approved buyer team",
-    access_status: "approved",
-    nda_required_status: "required",
-    approval_status: "approved",
-    summary_section: "Controlled business access with sanitized details and deeper diligence materials locked behind approval.",
-    documents_section: ["NDA placeholder", "Financial summary placeholder", "Diligence checklist placeholder"],
-    notes_qna_placeholder: "Buyer requests customer concentration and debt clarification.",
-    timeline_milestones: [
-      { label: "NDA executed", status: "complete" },
-      { label: "Diligence docs", status: "active" },
-      { label: "Q&A log", status: "waiting" },
-      { label: "Transfer prep", status: "queued" },
-    ],
-    transfer_or_diligence_status: "Diligence review active",
-    next_action: "Review documents and prepare for underwriting handoff",
-    document_status: "available",
-  },
-  {
-    id: "deal-03",
-    opportunity_name: "Metro Fleet Solutions LLC",
-    listing_type: "business",
-    visibility_mode: "approved_only",
-    approved_viewer: "Investor review placeholder",
-    access_status: "restricted",
-    nda_required_status: "required",
-    approval_status: "requested",
-    summary_section: "Access request received, but approval is still pending.",
-    documents_section: ["Access request placeholder", "No documents unlocked yet"],
-    notes_qna_placeholder: "Waiting for approval and NDA confirmation.",
-    timeline_milestones: [
-      { label: "Access request", status: "complete" },
-      { label: "Approval review", status: "active" },
-      { label: "NDA", status: "queued" },
-      { label: "Vault unlock", status: "locked" },
-    ],
-    transfer_or_diligence_status: "Approval pending",
-    next_action: "Approve access before any documents are visible",
-    document_status: "locked",
-  },
-];
+/**
+ * @deprecated - DEPRECATED: Fake demo data removed in production hardening.
+ * Deal room now uses real database queries from digital_asset_buyer_interest table.
+ * Do not use this data.
+ */
+export const dealRoomRecords: DealRoomRecord[] = [];
 
 export const accessStatusLabels: Record<AccessStatus, string> = {
   pending: "Pending",
