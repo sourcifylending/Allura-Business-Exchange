@@ -1,8 +1,8 @@
 import { SiteShell } from "@/components/site-shell";
 import { PageCard } from "@/components/page-card";
+import { BuyerNdaSignForm } from "@/components/buyer-nda-sign-form";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { verifyBuyerInviteToken } from "@/lib/invite-tokens";
-import { signNdaAction } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -106,25 +106,7 @@ export default async function BuyerInvitePage({ searchParams }: BuyerInvitePageP
                 </p>
               </div>
 
-              <form action={signNdaAction} className="grid gap-4">
-                <input type="hidden" name="token" value={token} />
-                <label className="grid gap-2 text-sm font-medium text-ink-800">
-                  Type your full legal name
-                  <input
-                    name="signed_name"
-                    required
-                    className="rounded-2xl border border-ink-200 bg-[rgb(var(--surface))] px-4 py-3 text-ink-950 outline-none transition focus:border-accent-500"
-                    placeholder="Full legal name"
-                  />
-                </label>
-                <label className="flex items-start gap-3 text-sm leading-6 text-ink-700">
-                  <input name="consent" type="checkbox" value="yes" required className="mt-1" />
-                  <span>I agree to electronically sign the NDA and understand that full review materials unlock only after signature.</span>
-                </label>
-                <button type="submit" className="rounded-full bg-accent-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-accent-700">
-                  Sign NDA and Unlock Materials
-                </button>
-              </form>
+              <BuyerNdaSignForm token={token} />
             </div>
           </PageCard>
         ) : (
