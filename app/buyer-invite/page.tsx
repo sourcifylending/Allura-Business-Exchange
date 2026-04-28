@@ -6,8 +6,6 @@ import { verifyBuyerInviteToken } from "@/lib/invite-tokens";
 
 export const dynamic = "force-dynamic";
 
-const SOURCIFY_PRESENTATION_URL = "https://www.beautiful.ai/player/-OrJXUfzHcgg6tdTg_z-?showControls=true";
-
 type BuyerInvitePageProps = Readonly<{
   searchParams?: {
     token?: string;
@@ -27,39 +25,53 @@ type BuyerInviteRecord = {
     asking_price?: number | null;
     short_description?: string | null;
     buyer_summary?: string | null;
-    presentation_title?: string | null;
-    presentation_embed_url?: string | null;
-    presentation_public_url?: string | null;
-    presentation_status?: string | null;
   } | null;
 };
 
-type LoadInviteResult =
-  | { error: string }
-  | { record: BuyerInviteRecord };
+type LoadInviteResult = { error: string } | { record: BuyerInviteRecord };
 
-function getPresentation(asset: BuyerInviteRecord["digital_assets"], assetName: string) {
-  const dbPresentationUrl = asset?.presentation_status === "active" ? asset.presentation_embed_url : null;
-  const dbPublicUrl = asset?.presentation_status === "active" ? asset.presentation_public_url : null;
-
-  if (dbPresentationUrl) {
-    return {
-      title: asset?.presentation_title || `${assetName} Asset Presentation`,
-      embedUrl: dbPresentationUrl,
-      publicUrl: dbPublicUrl || dbPresentationUrl,
-    };
-  }
-
-  if (assetName.toLowerCase().includes("sourcifylending")) {
-    return {
-      title: "SourcifyLending Asset Sale Presentation",
-      embedUrl: SOURCIFY_PRESENTATION_URL,
-      publicUrl: SOURCIFY_PRESENTATION_URL,
-    };
-  }
-
-  return null;
-}
+const SOURCIFY_SLIDES = [
+  {
+    title: "SourcifyLending Asset Sale",
+    body: "Software asset, established brand, operating workflows, portal infrastructure, and early recurring revenue model for qualified buyers.",
+  },
+  {
+    title: "Asset Overview",
+    body: "SourcifyLending was established in 2019 and repositioned into an AI-powered business credit advisory platform.",
+  },
+  {
+    title: "What Is Included",
+    body: "Public website, client portal, analyzer, admin tools, onboarding workflows, business process assets, and documented operating structure.",
+  },
+  {
+    title: "Revenue Model",
+    body: "Recurring advisory model with active paying clients and room to scale through monthly programs, buyer execution, partner referrals, and lead reactivation.",
+  },
+  {
+    title: "Buyer Opportunity",
+    body: "Best fit for fintech operators, business credit companies, funding advisors, agencies, SaaS operators, and service providers working with small business owners.",
+  },
+  {
+    title: "Platform Components",
+    body: "Analyzer, onboarding, task tracking, client portal, admin dashboard, partner infrastructure, billing-ready structure, support workflow, and internal operations tools.",
+  },
+  {
+    title: "Lead Database",
+    body: "Includes an aged MCA/business funding lead database that may support reactivation and outbound campaigns, depending on buyer execution and compliance.",
+  },
+  {
+    title: "Growth Path",
+    body: "Reactivate leads, run partner campaigns, improve SEO, recruit sales support, strengthen onboarding, increase conversion, and grow recurring revenue.",
+  },
+  {
+    title: "Transition Plan",
+    body: "Asset handoff, system walkthrough, workflow explanation, account transfer coordination where applicable, and limited post-closing support.",
+  },
+  {
+    title: "Next Steps",
+    body: "Review materials, ask questions, schedule a buyer call, submit offer, and proceed to purchase agreement if both sides agree.",
+  },
+];
 
 async function loadInvite(token: string): Promise<LoadInviteResult> {
   const verified = verifyBuyerInviteToken(token);
@@ -75,7 +87,7 @@ async function loadInvite(token: string): Promise<LoadInviteResult> {
   }
 
   const { data, error } = await (client.from("digital_asset_buyer_interest") as any)
-    .select("id,buyer_name,buyer_email,nda_status,nda_signed_date,digital_asset_id,digital_assets(*)")
+    .select("id,buyer_name,buyer_email,nda_status,nda_signed_date,digital_asset_id,digital_assets(name,asking_price,short_description,buyer_summary)")
     .eq("id", verified.buyerId)
     .single();
 
@@ -103,7 +115,7 @@ export default async function BuyerInvitePage({ searchParams }: BuyerInvitePageP
   const asset = record.digital_assets;
   const assetName = asset?.name || "Asset Review";
   const isSigned = record.nda_status === "signed";
-  const presentation = getPresentation(asset, assetName);
+  const isSourcify = assetName.toLowerCase().includes("sourcifylending");
 
   return (
     <SiteShell
@@ -148,30 +160,18 @@ export default async function BuyerInvitePage({ searchParams }: BuyerInvitePageP
                 </div>
               ) : null}
 
-              {presentation ? (
+              {isSourcify ? (
                 <div className="rounded-2xl border border-ink-200 bg-[rgb(var(--surface))] p-4">
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                      <div className="text-xs font-semibold tracking-[0.18em] text-ink-500 uppercase">Presentation</div>
-                      <h2 className="mt-1 text-lg font-semibold text-ink-950">{presentation.title}</h2>
-                    </div>
-                    <a
-                      href={presentation.publicUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="rounded-full bg-accent-600 px-4 py-2 text-center text-xs font-semibold text-white transition hover:bg-accent-700"
-                    >
-                      Open Full Presentation
-                    </a>
-                  </div>
-                  <div className="mt-4 overflow-hidden rounded-2xl border border-ink-200 bg-black">
-                    <iframe
-                      src={presentation.embedUrl}
-                      title={presentation.title}
-                      className="h-[420px] w-full"
-                      allow="autoplay; fullscreen; picture-in-picture"
-                      allowFullScreen
-                    />
+                  <div className="text-xs font-semibold tracking-[0.18em] text-ink-500 uppercase">Presentation</div>
+                  <h2 className="mt-1 text-lg font-semibold text-ink-950">SourcifyLending Asset Sale Presentation</h2>
+                  <div className="mt-4 grid gap-3">
+                    {SOURCIFY_SLIDES.map((slide, index) => (
+                      <div key={slide.title} className="rounded-2xl border border-ink-200 bg-[rgba(17,19,22,0.92)] p-4 text-white">
+                        <div className="text-xs font-semibold tracking-[0.18em] text-accent-300 uppercase">Slide {index + 1}</div>
+                        <h3 className="mt-2 text-lg font-semibold">{slide.title}</h3>
+                        <p className="mt-2 text-sm leading-6 text-ink-300">{slide.body}</p>
+                      </div>
+                    ))}
                   </div>
                 </div>
               ) : null}
